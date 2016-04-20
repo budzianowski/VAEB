@@ -66,7 +66,8 @@ class VAE(object):
             self.W6 = th.shared(value=W_values, name='W6')
             self.b6 = th.shared(value=b_values, name='b6')
 
-            self.params = [self.W3, self.W4, self.W5, self.W1, self.W2, self.W6, self.b3, self.b4, self.b5, self.b1, self.b2, self.b6]
+            self.params = [self.W3, self.W4, self.W5, self.W1, self.W2, \
+                self.W6, self.b3, self.b4, self.b5, self.b1, self.b2, self.b6]
         else:
             self.params = [self.W3, self.W4, self.W5, self.W1, self.W2, self.b3, self.b4, self.b5, self.b1, self.b2]
 
@@ -238,5 +239,5 @@ if __name__ == '__main__':
         LB /= len(batch_order)
 
         print("Epoch %s : [Lower bound: %s, time: %s]" % (epoch, LB, time.time() - start))
-        LBvalidation = model.validate(floatX(x_valid))
+        LBvalidation = model.validate(x_valid)
         print("          [Lower bound on validation set: %s]" % LBvalidation)
