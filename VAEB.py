@@ -84,8 +84,8 @@ class VAE(object):
 
         x_train = theano.shared(np.asarray(x_train, dtype=theano.config.floatX), name="x_train")
 
-        # UPDATE FUNCTION
-        self.update = self.getGradient(x_train)
+        # UPDATE and VALIDATE FUNCTION
+        self.update, self.validate = self.getGradient(x_train)
 
     def encoder(self, x):
         h = T.tanh(T.dot(x, self.W3) + self.b3)
@@ -153,7 +153,13 @@ class VAE(object):
             }
         )
 
-        return update
+        # getting likelihood for validation set
+        validate = theano.function(
+            [x],
+            logpx
+        )
+
+        return update, validate
 
     def getUpdates(self, gradients):
         eps = 0.000001  # fudge factor for for ADA-GRAD and MAP
@@ -194,7 +200,7 @@ if __name__ == '__main__':
     np.random.seed(10)
     n_latent = 10
     n_epochs = 2000
-    continuous = False
+    continuous = True
 
     print("loading data")
     if continuous:
@@ -202,13 +208,12 @@ if __name__ == '__main__':
         f = open('freyfaces.pkl', 'rb')
         x = cPickle.load(f)  # only 1965 observations
         f.close()
-        x_train = x[:1750]  # about 90% of the data
-        x_valid = x[1750:]
+        x_train = x[:1500]  # about 90% of the data
+        x_valid = x[1500:]
     else:
         hu_N = 500
         f = gzip.open('mnist.pkl.gz', 'rb')
         (x_train, y_train), (x_valid, y_valid), (x_test, y_test) = cPickle.load(f)  # 50000/10000/10000 observations
-        print(y_train[:40])
         f.close()
 
     print("creating the model")
@@ -225,10 +230,10 @@ if __name__ == '__main__':
 
         for batch in batch_order:
             batch_LB = model.update(batch)
-            # print(batch_LB)
             LB += batch_LB
 
         LB /= len(batch_order)
 
         print("Epoch %s : [Lower bound: %s, time: %s]" % (epoch, LB, time.time() - start))
-
+        LBvalidation = model.validate(x_valid)
+        print("          [Lower bound on validation set: %s]" % LBvalidation)
