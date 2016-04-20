@@ -19,7 +19,7 @@ command_line_args = {"seed" : (10, int),
                      "n_latent" : (10, int),
                      "n_epochs" : (2000, int)}
 #to add a new flag, simply add its name
-command_line_flags = {"continuous" : True}
+command_line_flags = ["continuous"]
 
 class VAE(object):
     def __init__(self, x_train, continuous=False, hidden_units=500, latent_size=10,
@@ -221,14 +221,13 @@ def get_arg(arg, args, default, type_) :
     return default
 
 
-def get_flag(flag, args, default_value) :
+def get_flag(flag, args) :
   flag = '-'+flag
   have_flag = flag in args
   if have_flag :
     args.remove(flag)
-    return True
 
-  return default_value
+  return have_flag
 
 def parse_args() :
   args = copy.deepcopy(sys.argv[1:])
@@ -237,8 +236,8 @@ def parse_args() :
     (arg_defalut_val, arg_type) = arg_args
     arg_dict[arg_name] = get_arg(arg_name, args, arg_defalut_val, arg_type)
 
-  for (flag_name, default_value) in command_line_flags.iteritems() :
-    arg_dict[flag_name] = get_flag(flag_name, args, default_value)
+  for flag_name in command_line_flags :
+    arg_dict[flag_name] = get_flag(flag_name, args)
 
   return arg_dict
 
