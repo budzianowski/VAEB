@@ -21,7 +21,9 @@ command_line_args = {'seed' : (10, int),
                      'batch_size' : (100, int),
                      'L' : (1, int),
                      'hidden_unit' : (-1, int),
-                     'learning_rate' : (0.01, float)}
+                     'learning_rate' : (0.01, float),
+                     'trace_file' : ('', str)}          #if set, trace information will be written about number of training
+                                                        #samples and lower bound
 #to add a new flag, simply add its name
 command_line_flags = ['continuous']
 
@@ -267,6 +269,7 @@ if __name__ == '__main__':
     L = args['L']
     hidden_unit = args['hidden_unit']
     learning_rate = args['learning_rate']
+    trace_file = args['trace_file']
 
     print("loading data")
     if continuous:
@@ -288,10 +291,11 @@ if __name__ == '__main__':
     model = VAE(x_train, continuous, hidden_unit, n_latent, batch_size, L, learning_rate)
 
     print("learning")
+    if len(trace_file) > 0 :
+        with open(trace_file, 'w') as f :
+            f.write('num_samples,L\n')
     batch_order = np.arange(int(model.N / model.batch_size))  # ordering of the batches
-    epoch = 0
-    while epoch < n_epochs:
-        epoch += 1
+    for epoch in range(n_epochs) :
         start = time.time()
         np.random.shuffle(batch_order)
         LB = 0.0
@@ -301,6 +305,10 @@ if __name__ == '__main__':
             LB += batch_LB
 
         LB /= len(batch_order)
+
+        if len(trace_file) > 0 :
+            with open(trace_file, 'a') as f :
+                f.write('{0},{1}\n'.format(model.N * (epoch + 1), LB))
 
         print("Epoch %s : [Lower bound: %s, time: %s]" % (epoch, LB, time.time() - start))
         LBvalidation = model.validate(x_valid)
