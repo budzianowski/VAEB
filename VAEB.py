@@ -10,6 +10,8 @@ import cPickle
 import sys
 import copy
 
+import VAEBImage
+
 floatX = th.config.floatX
 
 #   to add another command line argument, simply add:
@@ -26,6 +28,17 @@ command_line_args = {'seed' : (10, int),
                                                         #samples and lower bound
 #to add a new flag, simply add its name
 command_line_flags = ['continuous']
+
+
+def reparam_trick(mu, log_sigma) :
+    # creating random variable for reparametrization trick
+    srng = T.shared_randomstreams.RandomStreams(seed=10)                #TODO want another seed?
+    eps = srng.normal(mu.shape)  # shared random variable, Theano magic
+
+    # reparametrization trick
+    z = mu + T.exp(0.5 * log_sigma) * eps
+
+    return z
 
 class VAE(object):
     def __init__(self, x_train, continuous, hidden_units, latent_size,
@@ -114,19 +127,29 @@ class VAE(object):
 
         return mu, log_sigma
 
-    def decoder(self, x, z):
+    def decoder(self, z):
         h = T.tanh(T.dot(z, self.W1) + self.b1)
 
         if self.continuous:
             mu = T.nnet.sigmoid(T.dot(h, self.W2) + self.b2)
             log_sigma = T.dot(h, self.W6) + self.b6
 
+            return (mu, log_sigma)
+
+        else:
+            y = T.nnet.sigmoid(T.dot(h, self.W2) + self.b2)
+
+            return y
+
+    def posterior_log_prob(self, x, y) :
+
+        if self.continuous:
+            (mu, log_sigma) = y
             # Log-likelihood for Gaussian
             logpXgivenZ = (- 0.5 * np.log(2 * np.pi) - 0.5 * log_sigma \
                               - 0.5 * (x - mu) ** 2 / T.exp(log_sigma)).sum(axis=1, keepdims=True)
 
         else:
-            y = T.nnet.sigmoid(T.dot(h, self.W2) + self.b2)
             # Cross entropy
             logpXgivenZ = -T.nnet.binary_crossentropy(y, x).sum(axis=1, keepdims=True)  # pg.11 for MNIST
 
@@ -140,15 +163,11 @@ class VAE(object):
         # encoding
         mu, log_sigma = self.encoder(x)
 
-        # creating random variable for reparametrization trick
-        srng = T.shared_randomstreams.RandomStreams(seed=10)
-        eps = srng.normal(mu.shape)  # shared random variable, Theano magic
-
-        # reparametrization trick
-        z = mu + T.exp(0.5 * log_sigma) * eps
+        z = reparam_trick(mu, log_sigma)
 
         # decoding
-        logpXgivenZ = self.decoder(x, z)
+        y = self.decoder(z)
+        logpXgivenZ = self.posterior_log_prob(x, y)
 
         # KL
         KL = 0.5 * T.sum(1 + log_sigma - mu ** 2 - T.exp(log_sigma), axis=1, keepdims=True)
@@ -216,36 +235,36 @@ class VAE(object):
         return updates
 
 def get_arg(arg, args, default, type_) :
-  arg = '--'+arg
-  if arg in args :
-    index = args.index(arg)
-    value = args[args.index(arg) + 1]
-    del args[index]   #remove arg-name
-    del args[index]   #remove value
-    return type_(value)
-  else :
-    return default
+    arg = '--'+arg
+    if arg in args :
+        index = args.index(arg)
+        value = args[args.index(arg) + 1]
+        del args[index]     #remove arg-name
+        del args[index]     #remove value
+        return type_(value)
+    else :
+        return default
 
 
 def get_flag(flag, args) :
-  flag = '-'+flag
-  have_flag = flag in args
-  if have_flag :
-    args.remove(flag)
+    flag = '-'+flag
+    have_flag = flag in args
+    if have_flag :
+        args.remove(flag)
 
-  return have_flag
+    return have_flag
 
 def parse_args() :
-  args = copy.deepcopy(sys.argv[1:])
-  arg_dict = {}
-  for (arg_name, arg_args) in command_line_args.iteritems() :
-    (arg_defalut_val, arg_type) = arg_args
-    arg_dict[arg_name] = get_arg(arg_name, args, arg_defalut_val, arg_type)
+    args = copy.deepcopy(sys.argv[1:])
+    arg_dict = {}
+    for (arg_name, arg_args) in command_line_args.iteritems() :
+        (arg_defalut_val, arg_type) = arg_args
+        arg_dict[arg_name] = get_arg(arg_name, args, arg_defalut_val, arg_type)
 
-  for flag_name in command_line_flags :
-    arg_dict[flag_name] = get_flag(flag_name, args)
+    for flag_name in command_line_flags :
+        arg_dict[flag_name] = get_flag(flag_name, args)
 
-  return arg_dict
+    return arg_dict
 
 
 def print_args(args) :
