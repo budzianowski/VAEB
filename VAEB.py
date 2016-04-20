@@ -7,6 +7,7 @@ import numpy as np
 import gzip
 import time
 import cPickle
+import theano.config.floatX as floatX
 
 class VAE(object):
     def __init__(self, x_train, continuous=False, hidden_units=500, latent_size=10,
@@ -23,7 +24,7 @@ class VAE(object):
         self.L = L  # number of samples from p(z|x)
 
         # Initialization of weights (notation from pg.11):
-        initW = lambda dimIn, dimOut: self.prng.normal(0,  self.sigmaInit, (dimIn, dimOut)).astype(theano.config.floatX)
+        initW = lambda dimIn, dimOut: self.prng.normal(0,  self.sigmaInit, (dimIn, dimOut)).astype(floatX)
         initB = lambda dimOut: np.zeros((dimOut, )).astype(theano.config.floatX)
 
         # Notation as in the pg. 11
