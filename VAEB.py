@@ -15,15 +15,19 @@ floatX = th.config.floatX
 #to add another command line argument, simply add:
 #   its name as a key
 #   value as a tuple of its default value and the argument type (e.g. int, string, float)
-command_line_args = {"seed" : (10, int),
-                     "n_latent" : (10, int),
-                     "n_epochs" : (2000, int)}
+command_line_args = {'seed' : (10, int),
+                     'n_latent' : (10, int),
+                     'n_epochs' : (2000, int),
+                     'batch_size' : (100, int),
+                     'L' : (1, int),
+                     'hidden_unit' : (-1, int),
+                     'learning_rate' : (0.01, float)}
 #to add a new flag, simply add its name
-command_line_flags = ["continuous"]
+command_line_flags = ['continuous']
 
 class VAE(object):
-    def __init__(self, x_train, continuous=False, hidden_units=500, latent_size=10,
-                 batch_size=100, L=1, learning_rate=0.01):
+    def __init__(self, x_train, continuous, hidden_units, latent_size,
+                 batch_size, L, learning_rate):
 
         [self.N, self.input_size] = x_train.shape  # number of observations and features
         self.n_hidden_units = hidden_units
@@ -242,30 +246,46 @@ def parse_args() :
   return arg_dict
 
 
+def print_args(args) :
+    print('Parameters used:')
+    print('--------------------------------------')
+    for (k, v) in args.iteritems() :
+        print('\t{0}: {1}'.format(k, v))
+    print('--------------------------------------')
+
+
 if __name__ == '__main__':
     # model specification
     args = parse_args()
+    print_args(args)
+
     np.random.seed(args['seed'])
     n_latent = args['n_latent']
     n_epochs = args['n_epochs']
     continuous = args['continuous']
+    batch_size = args['batch_size']
+    L = args['L']
+    hidden_unit = args['hidden_unit']
+    learning_rate = args['learning_rate']
 
     print("loading data")
     if continuous:
-        hu_N = 200
+        if hidden_unit < 0 :
+            hidden_unit = 200
         f = open('freyfaces.pkl', 'rb')
         x = cPickle.load(f)  # only 1965 observations
         f.close()
         x_train = x[:1500]  # about 90% of the data
         x_valid = x[1500:]
     else:
-        hu_N = 500
+        if hidden_unit < 0 :
+            hidden_unit = 500
         f = gzip.open('mnist.pkl.gz', 'rb')
         (x_train, y_train), (x_valid, y_valid), (x_test, y_test) = cPickle.load(f)  # 50000/10000/10000 observations
         f.close()
 
     print("creating the model")
-    model = VAE(x_train, continuous, hu_N, n_latent)
+    model = VAE(x_train, continuous, hidden_unit, n_latent, batch_size, L, learning_rate)
 
     print("learning")
     batch_order = np.arange(int(model.N / model.batch_size))  # ordering of the batches
