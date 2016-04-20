@@ -238,5 +238,5 @@ if __name__ == '__main__':
         LB /= len(batch_order)
 
         print("Epoch %s : [Lower bound: %s, time: %s]" % (epoch, LB, time.time() - start))
-        LBvalidation = model.validate(x_valid)
+        LBvalidation = model.validate(floatX(x_valid))
         print("          [Lower bound on validation set: %s]" % LBvalidation)
