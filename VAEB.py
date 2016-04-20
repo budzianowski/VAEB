@@ -7,8 +7,19 @@ import numpy as np
 import gzip
 import time
 import cPickle
+import sys
+import copy
 
 floatX = th.config.floatX
+
+#to add another command line argument, simply add:
+#   its name as a key
+#   value as a tuple of its default value and the argument type (e.g. int, string, float)
+command_line_args = {"seed" : (10, int),
+                     "n_latent" : (10, int),
+                     "n_epochs" : (2000, int)}
+#to add a new flag, simply add its name
+command_line_flags = {"continuous" : True}
 
 class VAE(object):
     def __init__(self, x_train, continuous=False, hidden_units=500, latent_size=10,
@@ -198,12 +209,47 @@ class VAE(object):
 
         return updates
 
+def get_arg(arg, args, default, type_) :
+  arg = '--'+arg
+  if arg in args :
+    index = args.index(arg)
+    value = args[args.index(arg) + 1]
+    del args[index]   #remove arg-name
+    del args[index]   #remove value
+    return type_(value)
+  else :
+    return default
+
+
+def get_flag(flag, args, default_value) :
+  flag = '-'+flag
+  have_flag = flag in args
+  if have_flag :
+    args.remove(flag)
+    return True
+
+  return default_value
+
+def parse_args() :
+  args = copy.deepcopy(sys.argv[1:])
+  arg_dict = {}
+  for (arg_name, arg_args) in command_line_args.iteritems() :
+    (arg_defalut_val, arg_type) = arg_args
+    arg_dict[arg_name] = get_arg(arg_name, args, arg_defalut_val, arg_type)
+
+  for (flag_name, default_value) in command_line_flags.iteritems() :
+    arg_dict[flag_name] = get_flag(flag_name, args, default_value)
+
+  return arg_dict
+
+
 if __name__ == '__main__':
     # model specification
-    np.random.seed(10)
-    n_latent = 10
-    n_epochs = 2000
-    continuous = True
+    args = parse_args()
+    np.random.seed(args['seed'])
+    n_latent = args['n_latent']
+    n_epochs = args['n_epochs']
+    continuous = args['continuous']
 
     print("loading data")
     if continuous:
