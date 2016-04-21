@@ -9,10 +9,14 @@ major = {784 : 'C', 560 : 'F'}
 rotation = {784 : 0, 560 : -90}
 
 #converts the data contained in x to an image. Assumes it is from MNIST or freyface dataset
-def to_image(x) :
+def save_image(x, filename) :
+    assert x.size in dimensions.keys()
+    assert filename.endswith('jpg')
+
     dimension = dimensions[x.size]
     x = np.copy(x).reshape(dimension, order=major[x.size])
 
     image = Image.fromarray((1 - x) * 255).convert('RGB').rotate(rotation[x.size])
+    image.save(filename)
 
     return image
