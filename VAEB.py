@@ -313,3 +313,7 @@ if __name__ == '__main__':
         print("Epoch %s : [Lower bound: %s, time: %s]" % (epoch, LB, time.time() - start))
 
         print("          [Lower bound on validation set: %s]" % LBvalidation)
+
+        if len(trace_file) > 0 :
+            with open(trace_file, 'a') as f :
+                f.write('{0},{1},{2}\n'.format(model.N * (epoch + 1), LB, LBvalidation))
