@@ -271,7 +271,6 @@ if __name__ == '__main__':
     learning_rate = args['learning_rate']
     trace_file = args['trace_file']
 
-    continuous = True
     print("loading data")
     if continuous:
         if hidden_unit < 0 :
