@@ -9,6 +9,8 @@ import time
 import cPickle
 import sys
 import copy
+from theano import shared
+from matplotlib.pyplot import plot
 
 import VAEBImage
 
@@ -17,7 +19,7 @@ floatX = th.config.floatX
 #   to add another command line argument, simply add:
 #   its name as a key
 #   value as a tuple of its default value and the argument type (e.g. int, string, float)
-command_line_args = {'seed' : (10, int),
+command_line_args = {'seed' : (15485863, int),
                      'n_latent' : (10, int),
                      'n_epochs' : (2000, int),
                      'batch_size' : (100, int),
@@ -42,13 +44,15 @@ def reparam_trick(mu, log_sigma) :
 
 class VAE(object):
     def __init__(self, x_train, continuous, hidden_units, latent_size,
-                 batch_size, L, learning_rate):
+                 batch_size, L, learning_rate, eps=1e-6, rho=0.95):
 
         [self.N, self.input_size] = x_train.shape  # number of observations and features
         self.n_hidden_units = hidden_units
         self.n_latent = latent_size  # size of z
         self.continuous = continuous  # if we want to use MNIST or Frey data set
         self.learning_rate = learning_rate
+        self.eps = eps
+        self.rho = rho
         self.batch_size = batch_size
         self.prng = np.random.RandomState(10)
         self.sigmaInit = 0.01    # variance to initialize parameters, from pg. 7
@@ -172,21 +176,28 @@ class VAE(object):
         logpXgivenZ = self.posterior_log_prob(x, y)
 
         # KL
-        KL = 0.5 * T.sum(1 + log_sigma - mu ** 2 - T.exp(log_sigma), axis=1, keepdims=True)
+        KL = -0.5 * T.sum(1 + log_sigma - mu ** 2 - T.exp(log_sigma), axis=1, keepdims=True)
 
         # SGVB = KL + p(x|z) , eq. 10
-        logpx = T.mean(KL + logpXgivenZ)
+        logpx = T.sum(logpXgivenZ - KL)
+
+        # Apply prior to parameters here to make it inference-procedure indep.
+        scale = 1.0
+        train_criterion = logpx
+        for param in self.params:
+          train_criterion += -0.5 * scale * T.sum(param ** 2)
 
         # gradients
-        gradients = T.grad(logpx, self.params)
+        gradients = T.grad(train_criterion, self.params)
 
         # update of parameters
-        updates = self.getUpdates(gradients)
+        #updates = self.getUpdates(gradients)
+        updates = self.getAdaDeltaUpdates(gradients)
 
         # update function
         update = th.function(
             inputs=[index],
-            outputs=logpx,
+            outputs=logpx / self.batch_size,
             updates=updates,
             givens={
                 x: x_train[index * self.batch_size: (index + 1) * self.batch_size]
@@ -225,9 +236,9 @@ class VAE(object):
     # Function to use AdaDelta inference. eps and rho are the parameters from
     # the paper. eps=epsilon is for numerical stability and rho controls the
     # extent to which the parameters are smoothed between iterations.
-    def getAdaDeltaUpdates(self, gradients, eps, rho):
+    def getAdaDeltaUpdates(self, gradients):
 
-      updates = []
+      updates, rho, eps = [], self.rho, self.eps
       for x, g in zip(self.params, gradients):
 
         # Define the initiailisation for the algorithm parameters.
@@ -300,6 +311,7 @@ if __name__ == '__main__':
     hidden_unit = args['hidden_unit']
     learning_rate = args['learning_rate']
     trace_file = args['trace_file']
+    continuous = True
 
     print("loading data")
     if continuous:
@@ -335,7 +347,7 @@ if __name__ == '__main__':
             LB += batch_LB
 
         LB /= len(batch_order)
-        LBvalidation = model.validate(x_valid)
+        LBvalidation = model.validate(x_valid) / x_valid.shape[0]
         if len(trace_file) > 0 :
             with open(trace_file, 'a') as f :
                 f.write('{0},{1},{2}\n'.format(model.N * (epoch + 1), LB, LBvalidation))
@@ -347,3 +359,7 @@ if __name__ == '__main__':
         if len(trace_file) > 0 :
             with open(trace_file, 'a') as f :
                 f.write('{0},{1},{2}\n'.format(model.N * (epoch + 1), LB, LBvalidation))
+    
+
+
+
