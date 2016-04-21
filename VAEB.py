@@ -220,21 +220,30 @@ class VAE(object):
                              self.learning_rate * eps * (param ** 2)))  # MAP
             updates.append((ada, acc))
 
-        # # TODO: ADA-DELTA
-        # decay = 0.9
-        # updates = []
-        # for param, gradient, ada1, ada2 in zip(self.params, gradients, self.ADA1, self.ADA2):
-        #     accGradient = decay * ada1 + (1 - decay) * T.sqr(gradient)   # squared!
-        #     upd = (T.sqrt(ada2 + eps) / T.sqrt(accGradient + eps)) * gradient
-        #     accUpdate = decay * ada2 + (1 - decay) * T.sqr(upd)  # squared!
-        #
-        #     updates.append((param, param - upd \
-        #                     - self.learning_rate * eps * (param ** 2)))  # MAP
-        #
-        #     updates.append((ada1, accGradient))
-        #     updates.append((ada2, accUpdate))
-
         return updates
+
+    # Function to use AdaDelta inference. eps and rho are the parameters from
+    # the paper. eps=epsilon is for numerical stability and rho controls the
+    # extent to which the parameters are smoothed between iterations.
+    def getAdaDeltaUpdates(self, gradients, eps, rho):
+
+      updates = []
+      for x, g in zip(self.params, gradients):
+
+        # Define the initiailisation for the algorithm parameters.
+        dx_ac = shared(np.zeros(x.get_value().shape, dtype=floatX))
+        g_ac  = shared(np.zeros(x.get_value().shape, dtype=floatX))
+
+        # Define intermediate variables used to update stuff.
+        g_ac_new = rho * g_ac + (1.0 - rho) * T.sqr(g)
+        dx = T.sqrt(dx_ac + eps) * g / T.sqrt(g_ac_new + eps)
+
+        # Define udpates.
+        updates.append((g_ac, g_ac_new))
+        updates.append((x, x + dx))
+        updates.append((dx_ac, rho * dx_ac + (1.0 - rho) * T.sqr(dx)))
+            
+      return updates
 
 def get_arg(arg, args, default, type_) :
     arg = '--'+arg
