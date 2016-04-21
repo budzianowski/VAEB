@@ -191,8 +191,8 @@ class VAE(object):
         gradients = T.grad(train_criterion, self.params)
 
         # update of parameters
-        #updates = self.getUpdates(gradients)
-        updates = self.getAdaDeltaUpdates(gradients)
+        updates = self.getUpdates(gradients)
+        #updates = self.getAdaDeltaUpdates(gradients)
 
         # update function
         update = th.function(
@@ -214,7 +214,7 @@ class VAE(object):
         return update, validate
 
     def getUpdates(self, gradients):
-        eps = 0.000001  # fudge factor for for ADA-GRAD and MAP
+        eps = 0.000001  # fudge factor for for ADA-GRAD
 
         # # SGD with prior (MAP) or L2 regularisation
         # updates = [
@@ -227,8 +227,7 @@ class VAE(object):
         for param, gradient, ada in zip(self.params, gradients, self.ADA):
             acc = ada + T.sqr(gradient)   # squared!
 
-            updates.append((param, param + self.learning_rate * gradient / (T.sqrt(acc) + eps) -
-                             self.learning_rate * eps * (param ** 2)))  # MAP
+            updates.append((param, param + self.learning_rate * gradient / (T.sqrt(acc) + eps)))  # MAP
             updates.append((ada, acc))
 
         return updates
@@ -311,7 +310,6 @@ if __name__ == '__main__':
     hidden_unit = args['hidden_unit']
     learning_rate = args['learning_rate']
     trace_file = args['trace_file']
-    continuous = True
 
     print("loading data")
     if continuous:
