@@ -7,12 +7,42 @@ import numpy as np
 import gzip
 import time
 import cPickle
+import sys
+import copy
+
+import VAEBImage
 
 floatX = th.config.floatX
 
+#   to add another command line argument, simply add:
+#   its name as a key
+#   value as a tuple of its default value and the argument type (e.g. int, string, float)
+command_line_args = {'seed' : (10, int),
+                     'n_latent' : (10, int),
+                     'n_epochs' : (2000, int),
+                     'batch_size' : (100, int),
+                     'L' : (1, int),
+                     'hidden_unit' : (-1, int),
+                     'learning_rate' : (0.01, float),
+                     'trace_file' : ('', str)}          #if set, trace information will be written about number of training
+                                                        #samples and lower bound
+#to add a new flag, simply add its name
+command_line_flags = ['continuous']
+
+
+def reparam_trick(mu, log_sigma) :
+    # creating random variable for reparametrization trick
+    srng = T.shared_randomstreams.RandomStreams(seed=10)                #TODO want another seed?
+    eps = srng.normal(mu.shape)  # shared random variable, Theano magic
+
+    # reparametrization trick
+    z = mu + T.exp(0.5 * log_sigma) * eps
+
+    return z
+
 class VAE(object):
-    def __init__(self, x_train, continuous=False, hidden_units=500, latent_size=10,
-                 batch_size=100, L=1, learning_rate=0.01):
+    def __init__(self, x_train, continuous, hidden_units, latent_size,
+                 batch_size, L, learning_rate):
 
         [self.N, self.input_size] = x_train.shape  # number of observations and features
         self.n_hidden_units = hidden_units
@@ -60,7 +90,7 @@ class VAE(object):
         self.W2 = th.shared(value=W_values, name='W2')
         self.b2 = th.shared(value=b_values, name='b2')
 
-        if self.continuous: # for Freyfaces
+        if self.continuous:  # for Freyfaces
             W_values = initW(self.n_hidden_units, self.input_size)  # sigma for gaussian output
             b_values = initB(self.input_size)
             self.W6 = th.shared(value=W_values, name='W6')
@@ -99,19 +129,29 @@ class VAE(object):
 
         return mu, log_sigma
 
-    def decoder(self, x, z):
+    def decoder(self, z):
         h = T.tanh(T.dot(z, self.W1) + self.b1)
 
         if self.continuous:
             mu = T.nnet.sigmoid(T.dot(h, self.W2) + self.b2)
             log_sigma = T.dot(h, self.W6) + self.b6
 
+            return (mu, log_sigma)
+
+        else:
+            y = T.nnet.sigmoid(T.dot(h, self.W2) + self.b2)
+
+            return y
+
+    def posterior_log_prob(self, x, y) :
+
+        if self.continuous:
+            (mu, log_sigma) = y
             # Log-likelihood for Gaussian
             logpXgivenZ = (- 0.5 * np.log(2 * np.pi) - 0.5 * log_sigma \
                               - 0.5 * (x - mu) ** 2 / T.exp(log_sigma)).sum(axis=1, keepdims=True)
 
         else:
-            y = T.nnet.sigmoid(T.dot(h, self.W2) + self.b2)
             # Cross entropy
             logpXgivenZ = -T.nnet.binary_crossentropy(y, x).sum(axis=1, keepdims=True)  # pg.11 for MNIST
 
@@ -125,15 +165,11 @@ class VAE(object):
         # encoding
         mu, log_sigma = self.encoder(x)
 
-        # creating random variable for reparametrization trick
-        srng = T.shared_randomstreams.RandomStreams(seed=10)
-        eps = srng.normal(mu.shape)  # shared random variable, Theano magic
-
-        # reparametrization trick
-        z = mu + T.exp(0.5 * log_sigma) * eps
+        z = reparam_trick(mu, log_sigma)
 
         # decoding
-        logpXgivenZ = self.decoder(x, z)
+        y = self.decoder(z)
+        logpXgivenZ = self.posterior_log_prob(x, y)
 
         # KL
         KL = 0.5 * T.sum(1 + log_sigma - mu ** 2 - T.exp(log_sigma), axis=1, keepdims=True)
@@ -200,35 +236,87 @@ class VAE(object):
 
         return updates
 
+def get_arg(arg, args, default, type_) :
+    arg = '--'+arg
+    if arg in args :
+        index = args.index(arg)
+        value = args[args.index(arg) + 1]
+        del args[index]     #remove arg-name
+        del args[index]     #remove value
+        return type_(value)
+    else :
+        return default
+
+
+def get_flag(flag, args) :
+    flag = '-'+flag
+    have_flag = flag in args
+    if have_flag :
+        args.remove(flag)
+
+    return have_flag
+
+def parse_args() :
+    args = copy.deepcopy(sys.argv[1:])
+    arg_dict = {}
+    for (arg_name, arg_args) in command_line_args.iteritems() :
+        (arg_defalut_val, arg_type) = arg_args
+        arg_dict[arg_name] = get_arg(arg_name, args, arg_defalut_val, arg_type)
+
+    for flag_name in command_line_flags :
+        arg_dict[flag_name] = get_flag(flag_name, args)
+
+    return arg_dict
+
+
+def print_args(args) :
+    print('Parameters used:')
+    print('--------------------------------------')
+    for (k, v) in args.iteritems() :
+        print('\t{0}: {1}'.format(k, v))
+    print('--------------------------------------')
+
+
 if __name__ == '__main__':
     # model specification
-    np.random.seed(10)
-    n_latent = 10
-    n_epochs = 2000
-    continuous = True
+    args = parse_args()
+    print_args(args)
+
+    np.random.seed(args['seed'])
+    n_latent = args['n_latent']
+    n_epochs = args['n_epochs']
+    continuous = args['continuous']
+    batch_size = args['batch_size']
+    L = args['L']
+    hidden_unit = args['hidden_unit']
+    learning_rate = args['learning_rate']
+    trace_file = args['trace_file']
 
     print("loading data")
     if continuous:
-        hu_N = 200
+        if hidden_unit < 0 :
+            hidden_unit = 200
         f = open('freyfaces.pkl', 'rb')
         x = cPickle.load(f)  # only 1965 observations
         f.close()
         x_train = x[:1500]  # about 90% of the data
         x_valid = x[1500:]
     else:
-        hu_N = 500
+        if hidden_unit < 0 :
+            hidden_unit = 500
         f = gzip.open('mnist.pkl.gz', 'rb')
         (x_train, y_train), (x_valid, y_valid), (x_test, y_test) = cPickle.load(f)  # 50000/10000/10000 observations
         f.close()
 
     print("creating the model")
-    model = VAE(x_train, continuous, hu_N, n_latent)
+    model = VAE(x_train, continuous, hidden_unit, n_latent, batch_size, L, learning_rate)
 
     print("learning")
+    if len(trace_file) > 0 :
+        with open(trace_file, 'w') as f :
+            f.write('num_samples,L,Lvalid\n')
     batch_order = np.arange(int(model.N / model.batch_size))  # ordering of the batches
-    epoch = 0
-    while epoch < n_epochs:
-        epoch += 1
+    for epoch in range(n_epochs) :
         start = time.time()
         np.random.shuffle(batch_order)
         LB = 0.0
@@ -238,7 +326,15 @@ if __name__ == '__main__':
             LB += batch_LB
 
         LB /= len(batch_order)
+        LBvalidation = model.validate(x_valid)
+        if len(trace_file) > 0 :
+            with open(trace_file, 'a') as f :
+                f.write('{0},{1},{2}\n'.format(model.N * (epoch + 1), LB, LBvalidation))
 
         print("Epoch %s : [Lower bound: %s, time: %s]" % (epoch, LB, time.time() - start))
-        LBvalidation = model.validate(x_valid)
+
         print("          [Lower bound on validation set: %s]" % LBvalidation)
+
+        if len(trace_file) > 0 :
+            with open(trace_file, 'a') as f :
+                f.write('{0},{1},{2}\n'.format(model.N * (epoch + 1), LB, LBvalidation))
