@@ -12,7 +12,7 @@ import copy
 
 floatX = th.config.floatX
 
-#to add another command line argument, simply add:
+#   to add another command line argument, simply add:
 #   its name as a key
 #   value as a tuple of its default value and the argument type (e.g. int, string, float)
 command_line_args = {'seed' : (10, int),
@@ -77,7 +77,7 @@ class VAE(object):
         self.W2 = th.shared(value=W_values, name='W2')
         self.b2 = th.shared(value=b_values, name='b2')
 
-        if self.continuous: # for Freyfaces
+        if self.continuous:  # for Freyfaces
             W_values = initW(self.n_hidden_units, self.input_size)  # sigma for gaussian output
             b_values = initB(self.input_size)
             self.W6 = th.shared(value=W_values, name='W6')
@@ -271,6 +271,7 @@ if __name__ == '__main__':
     learning_rate = args['learning_rate']
     trace_file = args['trace_file']
 
+    continuous = True
     print("loading data")
     if continuous:
         if hidden_unit < 0 :
@@ -293,7 +294,7 @@ if __name__ == '__main__':
     print("learning")
     if len(trace_file) > 0 :
         with open(trace_file, 'w') as f :
-            f.write('num_samples,L\n')
+            f.write('num_samples,L,Lvalid\n')
     batch_order = np.arange(int(model.N / model.batch_size))  # ordering of the batches
     for epoch in range(n_epochs) :
         start = time.time()
@@ -305,11 +306,11 @@ if __name__ == '__main__':
             LB += batch_LB
 
         LB /= len(batch_order)
-
+        LBvalidation = model.validate(x_valid)
         if len(trace_file) > 0 :
             with open(trace_file, 'a') as f :
-                f.write('{0},{1}\n'.format(model.N * (epoch + 1), LB))
+                f.write('{0},{1},{2}\n'.format(model.N * (epoch + 1), LB, LBvalidation))
 
         print("Epoch %s : [Lower bound: %s, time: %s]" % (epoch, LB, time.time() - start))
-        LBvalidation = model.validate(x_valid)
+
         print("          [Lower bound on validation set: %s]" % LBvalidation)
