@@ -1,0 +1,104 @@
+\documentclass[10pt,a4paper]{article}
+%twocolumn
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{lmodern}
+\newcounter{defcounter}
+\setcounter{defcounter}{0}
+
+%%% PAGE DIMENSIONS
+\usepackage{geometry} % to change the page dimensions
+\geometry{a4paper} % or letterpaper (US) or a5paper or....
+\geometry{margin=2cm} % for example, change the margins to 2 inches all round
+
+\usepackage[parfill]{parskip} % Activate to begin paragraphs with an empty line rather than an indenet
+\usepackage{graphicx}
+
+\usepackage{xcolor}
+\usepackage{listings}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\lstset{basicstyle=\ttfamily,
+ backgroundcolor=\color{backcolour},   
+  showstringspaces=false,
+  commentstyle=\color{red},
+  keywordstyle=\color{blue}
+}
+
+%getting the dots
+\usepackage{tocloft}
+\makeatletter
+\renewcommand{\@seccntformat}[1]{\csname the#1\endcsname.\quad}
+\makeatother
+
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
+
+%%%Definitions
+\newcommand{\bet}{\boldsymbol{\beta}}
+\newcommand{\xx}{\widetilde{\boldsymbol{x}}^{(n)}}
+
+\usepackage{float}
+\usepackage{multirow}
+
+% no linebreaks after subsection!
+\usepackage{titlesec}
+%\titleformat{\subsection}[runin]{\normalfont\large\bfseries}{\thesubsection}{1em}{}
+
+\usepackage{float}
+\usepackage{multirow}
+
+\begin{document}
+\begin{center}
+\Large{\textsc{
+University of Cambridge}}\\
+\vspace{.5cm}
+\large\textbf{MLSALT 4}\\
+\vspace{.5cm}
+\large{Tom}\\
+\large{Will}\\
+\large{Paweł Budzianowski, pfb30, Clare Hall}\\
+\end{center} 
+
+\section{Introduction}
+
+
+
+\begin{lstlisting}[ basicstyle=\small,language = python , breaklines=true]=
+
+
+\end{lstlisting}
+
+
+
+ {\small \textbf{Table 1.} The results of baseline and focus tracker on DSTC data.}
+\begin{center}
+\begin{tabular}{c | c c c} \label{tab1}
+Baseline &  Joint Goals & Requested & Method \\ \hline 
+Accuracy & 0.569 & 0.914 & 0.682\\
+L2 norm & 0.834  & 0.120& 0.576\\
+\end{tabular} 
+\end{center}
+
+\begin{figure}[!htb]
+\minipage{0.5\linewidth}%
+% \includegraphics[width=\linewidth]{mcc1}
+\endminipage 
+\minipage{0.5\linewidth}  
+%\includegraphics[width=\linewidth]{mcc2}
+\endminipage\hfill
+  \caption[1]{Evaluations results on DSTC task with different specification parameter.}
+\end{figure}
+
+\begin{thebibliography}{15}
+\bibitem{sutton} R.S. Sutton, A. G. Barto, \emph{Reinforcement Learning: An Introduction}, The MIT Press (March 1998), 2011.
+
+
+\end{thebibliography}
+
+\end{document}
+
