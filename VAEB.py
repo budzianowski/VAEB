@@ -29,7 +29,7 @@ command_line_args = {'seed' : (15485863, int),
                      'trace_file' : ('', str)}          #if set, trace information will be written about number of training
                                                         #samples and lower bound
 #to add a new flag, simply add its name
-command_line_flags = ['continuous']
+command_line_flags = ['continuous', 'generic_estimator']
 
 
 def reparam_trick(mu, log_sigma) :
@@ -44,19 +44,20 @@ def reparam_trick(mu, log_sigma) :
 
 class VAE(object):
     def __init__(self, x_train, continuous, hidden_units, latent_size,
-                 batch_size, L, learning_rate, eps=1e-6, rho=0.95):
+                 batch_size, L, learning_rate, genericEstimator):
 
         [self.N, self.input_size] = x_train.shape  # number of observations and features
         self.n_hidden_units = hidden_units
         self.n_latent = latent_size  # size of z
         self.continuous = continuous  # if we want to use MNIST or Frey data set
         self.learning_rate = learning_rate
-        self.eps = eps
-        self.rho = rho
+        self.eps = 1e-6
+        self.rho = 0.95
         self.batch_size = batch_size
         self.prng = np.random.RandomState(10)
         self.sigmaInit = 0.01    # variance to initialize parameters, from pg. 7
         self.L = L  # number of samples from p(z|x)
+        self.genericEstimator = genericEstimator
 
         # Initialization of weights (notation from pg.11):
         initW = lambda dimIn, dimOut: self.prng.normal(0,  self.sigmaInit, (dimIn, dimOut)).astype(floatX)
@@ -112,14 +113,6 @@ class VAE(object):
             eps_p = np.zeros_like(param.get_value(borrow=True), dtype=floatX)
             self.ADA.append(th.shared(eps_p, borrow=True))
 
-        # # TODO: ADA-DELTA parameters
-        # self.ADA1 = []
-        # self.ADA2 = []
-        # for param in self.params:
-        #     eps_p = np.zeros_like(param.get_value(borrow=True), dtype=floatX)
-        #     self.ADA1.append(th.shared(eps_p, borrow=True))
-        #     self.ADA2.append(th.shared(eps_p, borrow=True))
-
         x_train = th.shared(np.asarray(x_train, dtype=floatX), name="x_train")
 
         # UPDATE and VALIDATE FUNCTION
@@ -148,7 +141,6 @@ class VAE(object):
             return y
 
     def posterior_log_prob(self, x, y) :
-
         if self.continuous:
             (mu, log_sigma) = y
             # Log-likelihood for Gaussian
@@ -161,6 +153,39 @@ class VAE(object):
 
         return logpXgivenZ
 
+    def getLA(self, x, mu, log_sigma):
+        SGVB = 0
+        for ii in range(self.L):
+            # p(x|z)
+            z = reparam_trick(mu, log_sigma)
+            y = self.decoder(z)
+            # prior
+            prior = (- 0.5 * np.log(2 * np.pi) - 0.5 * z ** 2).sum(axis=1, keepdims=True)
+            # logQ
+            logQ = (- 0.5 * np.log(2 * np.pi) - 0.5 * log_sigma \
+                        - 0.5 * (z - mu) ** 2 / T.exp(log_sigma)).sum(axis=1, keepdims=True)
+
+            SGVB += T.sum(self.posterior_log_prob(x, y) + prior - logQ)
+        SGVB /= self.L
+
+        return SGVB
+
+    def getLB(self, x, mu, log_sigma):
+        SGVB = 0
+        for ii in range(self.L):
+            # p(x|z)
+            z = reparam_trick(mu, log_sigma)
+            # decoding
+            y = self.decoder(z)
+            logpXgivenZ = self.posterior_log_prob(x, y)
+            SGVB += T.sum(logpXgivenZ)
+        SGVB /= self.L
+        # KL
+        KL = 0.5 * T.sum(1 + log_sigma - mu ** 2 - T.exp(log_sigma), axis=1, keepdims=True)
+        SGVB += T.sum(KL)
+
+        return SGVB
+
     # MAIN function for feed-forwarding and getting update
     def getGradient(self, x_train):
         x = T.matrix('x')   # creating Theano variable for input
@@ -169,21 +194,15 @@ class VAE(object):
         # encoding
         mu, log_sigma = self.encoder(x)
 
-        z = reparam_trick(mu, log_sigma)
-
-        # decoding
-        y = self.decoder(z)
-        logpXgivenZ = self.posterior_log_prob(x, y)
-
-        # KL
-        KL = -0.5 * T.sum(1 + log_sigma - mu ** 2 - T.exp(log_sigma), axis=1, keepdims=True)
-
-        # SGVB = KL + p(x|z) , eq. 10
-        logpx = T.sum(logpXgivenZ - KL)
+        # SGVB = KL + p(x|z) , eq. 10 or eq.6
+        if generic_estimator:  # LA
+            SGVB = self.getLA(x, mu, log_sigma)
+        else:  # LB
+            SGVB = self.getLB(x, mu, log_sigma)
 
         # Apply prior to parameters here to make it inference-procedure indep.
         scale = 1.0
-        train_criterion = logpx
+        train_criterion = SGVB
         for param in self.params:
           train_criterion += -0.5 * scale * T.sum(param ** 2)
 
@@ -197,7 +216,7 @@ class VAE(object):
         # update function
         update = th.function(
             inputs=[index],
-            outputs=logpx / self.batch_size,
+            outputs=SGVB / self.batch_size,
             updates=updates,
             givens={
                 x: x_train[index * self.batch_size: (index + 1) * self.batch_size]
@@ -207,14 +226,14 @@ class VAE(object):
         # getting likelihood for validation set
         validate = th.function(
             [x],
-            logpx,
+            SGVB,
             allow_input_downcast=True
         )
 
         return update, validate
 
     def getUpdates(self, gradients):
-        eps = 0.000001  # fudge factor for for ADA-GRAD
+        eps = self.eps  # fudge factor for for ADA-GRAD
 
         # # SGD with prior (MAP) or L2 regularisation
         # updates = [
@@ -310,6 +329,8 @@ if __name__ == '__main__':
     hidden_unit = args['hidden_unit']
     learning_rate = args['learning_rate']
     trace_file = args['trace_file']
+    generic_estimator = args['generic_estimator']
+
 
     print("loading data")
     if continuous:
@@ -328,7 +349,7 @@ if __name__ == '__main__':
         f.close()
 
     print("creating the model")
-    model = VAE(x_train, continuous, hidden_unit, n_latent, batch_size, L, learning_rate)
+    model = VAE(x_train, continuous, hidden_unit, n_latent, batch_size, L, learning_rate, generic_estimator)
 
     print("learning")
     if len(trace_file) > 0 :
