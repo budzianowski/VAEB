@@ -180,7 +180,7 @@ def LearnMNIST(epochs=25, Dz=20, Ntr=50000):
 
   # Construct autoencoder.
   train, reconstruct, encode, decode, theta = ConstructAE( \
-    Xtr, Denc=[500], Dz=Dz, Ddec=[500], otype='binary', inf=AdaGrad(0.001))
+    Xtr, Denc=[500], Dz=Dz, Ddec=[500], otype='binary', inf=AdaGrad(0.01))
 
   # Train the autoencoder. Permute the order of the data after each epoch - 
   # if you don't do this then you get weird periodicities in the learning curve.
@@ -217,7 +217,7 @@ def main():
   # Seed with a large-ish prime.
   rnd.seed(15485863)
 
-  """# Appears to still be improving after 200 iterations.
+  # Appears to still be improving after 200 iterations.
   Dz = 2
   reconstruct, encode, decode = LearnFreyFace(epochs=1000, Dz=Dz, Ntr=1500)
 
@@ -226,10 +226,10 @@ def main():
     Z = rnd.normal(0.0, 1.0, size=(1, Dz)).astype(floatX)
     plt.imshow(np.reshape(decode(Z), (28, 20)), cmap='gray')
     plt.colorbar()
-    plt.show()"""
+    plt.show()
 
   # Generally requires fewer epochs owing to being a smaller data set.
-  Dz = 2
+  Dz = 5
   reconstruct, encode, decode = LearnMNIST(epochs=100, Dz=Dz, Ntr=50000)
 
   # Spit out some numbers.
