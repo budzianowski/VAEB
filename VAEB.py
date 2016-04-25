@@ -6,7 +6,10 @@ import theano.tensor as T
 import numpy as np
 import gzip
 import time
-import cPickle
+try :
+    import cPickle as pickle
+except :
+    import pickle
 import sys
 import copy
 
@@ -24,8 +27,10 @@ command_line_args = {'seed' : (10, int),
                      'L' : (1, int),
                      'hidden_unit' : (-1, int),
                      'learning_rate' : (0.01, float),
-                     'trace_file' : ('', str)}          #if set, trace information will be written about number of training
+                     'trace_file' : ('', str),          #if set, trace information will be written about number of training
                                                         #samples and lower bound
+                     'save_file' : ('', str),           #if set will train model and save it to this file
+                     'load_file' : ('', str)}           #if set will load model from this file, and won't traina new model
 #to add a new flag, simply add its name
 command_line_flags = ['continuous']
 
@@ -40,20 +45,8 @@ def reparam_trick(mu, log_sigma) :
 
     return z
 
-class VAE(object):
-    def __init__(self, x_train, continuous, hidden_units, latent_size,
-                 batch_size, L, learning_rate):
-
-        [self.N, self.input_size] = x_train.shape  # number of observations and features
-        self.n_hidden_units = hidden_units
-        self.n_latent = latent_size  # size of z
-        self.continuous = continuous  # if we want to use MNIST or Frey data set
-        self.learning_rate = learning_rate
-        self.batch_size = batch_size
-        self.prng = np.random.RandomState(10)
-        self.sigmaInit = 0.01    # variance to initialize parameters, from pg. 7
-        self.L = L  # number of samples from p(z|x)
-
+class VAEB(object):
+    def initialize_params(self) :
         # Initialization of weights (notation from pg.11):
         initW = lambda dimIn, dimOut: self.prng.normal(0,  self.sigmaInit, (dimIn, dimOut)).astype(floatX)
         initB = lambda dimOut: np.zeros((dimOut, )).astype(floatX)
@@ -100,6 +93,30 @@ class VAE(object):
         else:
             self.params = [self.W3, self.W4, self.W5, self.W1, self.W2, self.b3, self.b4, self.b5, self.b1, self.b2]
 
+
+    def __init__(self, x_train, continuous, hidden_units, latent_size, batch_size,
+                 L, learning_rate, params=None, prng=None, sigmaInit=None):
+
+        [self.N, self.input_size] = x_train.shape  # number of observations and features
+        self.n_hidden_units = hidden_units
+        self.n_latent = latent_size  # size of z
+        self.continuous = continuous  # if we want to use MNIST or Frey data set
+        self.learning_rate = learning_rate
+        self.batch_size = batch_size
+        self.prng = np.random.RandomState(10) if prng is None else prng
+        self.sigmaInit = 0.01 if sigmaInit is None else sigmaInit   # variance to initialize parameters, from pg. 7
+        self.L = L  # number of samples from p(z|x)
+
+        if params is None :
+            self.initialize_params()
+        else :
+            self.params = params
+            if continuous :
+                [self.W3, self.W4, self.W5, self.W1, self.W2, self.W6, self.b3, self.b4, self.b5, self.b1, self.b2, self.b6] = self.params
+            else :
+                [self.W3, self.W4, self.W5, self.W1, self.W2, self.b3, self.b4, self.b5, self.b1, self.b2] = self.params 
+
+
         # ADA-GRAD parameters
         self.ADA = []
         for param in self.params:
@@ -118,6 +135,60 @@ class VAE(object):
 
         # UPDATE and VALIDATE FUNCTION
         self.update, self.validate = self.getGradient(x_train)
+
+    def save(self, file_name) :
+        print('Saving model to: {0}'.format(file_name))
+
+        with open(file_name, 'wb') as f :
+            pickle.dump(self.n_hidden_units, f)
+            pickle.dump(self.n_latent, f)
+            pickle.dump(self.continuous, f)
+            pickle.dump(self.learning_rate, f)
+            pickle.dump(self.batch_size, f)
+            pickle.dump(self.prng, f)
+            pickle.dump(self.sigmaInit, f)
+            pickle.dump(self.L, f)
+
+            for p in self.params :
+                pickle.dump(p, f)
+
+
+    @staticmethod
+    def load(file_name) :
+        print('Loading model form : {0}'.format(file_name))
+        with open(file_name, 'rb') as f :
+            n_hidden_units = pickle.load(f)
+            n_latent = pickle.load(f)
+            continuous = pickle.load(f)
+            learning_rate = pickle.load(f)
+            batch_size = pickle.load(f)
+            prng = pickle.load(f)
+            sigmaInit = pickle.load(f)
+            L = pickle.load(f)
+
+            params = []
+            while True :
+                try :
+                    p = pickle.load(f)
+                    params.append(p)
+                except EOFError :
+                    break
+
+            #loading data in a load func, little hacky, but hey
+            if continuous :
+                with open('freyfaces.pkl', 'rb') as f :
+                    data = pickle.load(f)  # only 1965 observations
+                    f.close()
+                    x_train = data[:1500]  # about 90% of the data
+                    x_valid = data[1500:]
+                    data = (x_train, x_valid)
+            else :
+                with gzip.open('mnist.pkl.gz', 'rb') as f :
+                    data = pickle.load(f)  # 50000/10000/10000 observations
+                    (x_train, y_train), (x_valid, y_valid), (x_test, y_test) = data
+
+            return VAEB(x_train, continuous, n_hidden_units, n_latent, batch_size, L, learning_rate, params, prng, sigmaInit), data
+            
 
     def encoder(self, x):
         h = T.tanh(T.dot(x, self.W3) + self.b3)
@@ -247,7 +318,7 @@ def get_arg(arg, args, default, type_) :
 
 
 def get_flag(flag, args) :
-    flag = '-'+flag
+    flag = '--'+flag
     have_flag = flag in args
     if have_flag :
         args.remove(flag)
@@ -264,6 +335,9 @@ def parse_args() :
     for flag_name in command_line_flags :
         arg_dict[flag_name] = get_flag(flag_name, args)
 
+    if len(args) > 0 :
+        print 'Have unused args: {0}'.format(args)
+
     return arg_dict
 
 
@@ -274,12 +348,17 @@ def print_args(args) :
         print('\t{0}: {1}'.format(k, v))
     print('--------------------------------------')
 
+def load_model(file_name) :
+    with open(file_name, 'rb') as f :
+        return pickle.load(f)
 
-if __name__ == '__main__':
+def save_model(model, file_name) :
+    print('Saving model to {0}'.format(file_name))
+    with open(file_name, 'wb') as f :
+        pickle.dump(model, f)
+
+def train_model(args) :
     # model specification
-    args = parse_args()
-    print_args(args)
-
     np.random.seed(args['seed'])
     n_latent = args['n_latent']
     n_epochs = args['n_epochs']
@@ -289,25 +368,29 @@ if __name__ == '__main__':
     hidden_unit = args['hidden_unit']
     learning_rate = args['learning_rate']
     trace_file = args['trace_file']
+    save_file = args['save_file']
 
     print("loading data")
     if continuous:
         if hidden_unit < 0 :
             hidden_unit = 200
         f = open('freyfaces.pkl', 'rb')
-        x = cPickle.load(f)  # only 1965 observations
+        data = pickle.load(f)  # only 1965 observations
         f.close()
-        x_train = x[:1500]  # about 90% of the data
-        x_valid = x[1500:]
+        x_train = data[:1500]  # about 90% of the data
+        x_valid = data[1500:]
+        data = (x_train, x_valid)
     else:
         if hidden_unit < 0 :
             hidden_unit = 500
         f = gzip.open('mnist.pkl.gz', 'rb')
-        (x_train, y_train), (x_valid, y_valid), (x_test, y_test) = cPickle.load(f)  # 50000/10000/10000 observations
+        data = pickle.load(f)  # 50000/10000/10000 observations
+        (x_train, y_train), (x_valid, y_valid), (x_test, y_test) = data
         f.close()
 
     print("creating the model")
-    model = VAE(x_train, continuous, hidden_unit, n_latent, batch_size, L, learning_rate)
+    model = VAEB(x_train, continuous, hidden_unit, n_latent, batch_size, L, learning_rate)
+    print model
 
     print("learning")
     if len(trace_file) > 0 :
@@ -336,3 +419,43 @@ if __name__ == '__main__':
         if len(trace_file) > 0 :
             with open(trace_file, 'a') as f :
                 f.write('{0},{1},{2}\n'.format(model.N * (epoch + 1), LB, LBvalidation))
+
+    
+    if len(save_file) > 0 :
+        model.save(save_file)
+    
+    return model, data
+
+def main() :
+    args = parse_args()
+    print_args(args)
+
+    if len(args['load_file']) == 0 :
+        model, data = train_model(args)
+    else :
+        model, data = VAEB.load(args['load_file'])
+
+    if model.continuous :
+        (x_train, x_valid) = data
+        x = x_train[1]
+        
+        mu, log_sigma = model.encoder(x)
+
+        z = reparam_trick(mu, log_sigma)
+
+        # decoding
+        (mu, sigma) = model.decoder(z)
+    else :
+        (x_train, y_train), (x_valid, y_valid), (x_test, y_test) = data
+        x = x_train[1]
+        
+        mu, log_sigma = model.encoder(x)
+
+        z = reparam_trick(mu, log_sigma.eval())
+
+        # decoding
+        y = model.decoder(z)
+        
+
+if __name__ == '__main__':
+    main()
