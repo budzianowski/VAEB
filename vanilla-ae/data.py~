@@ -1,0 +1,139 @@
+from theano import shared
+import theano as th
+import numpy as np
+import cPickle, gzip
+import numpy as np
+import numpy.random as rnd
+
+floatX = th.config.floatX
+
+
+
+# Load the Kaggle classification data.
+def LoadMLPracticalClassification(for_submission=1, r=1000):
+
+  # Load the training data inputs and normalise it for stability purposes.
+  Xtr = np.loadtxt('agrad/data/class_train_in.csv', \
+    delimiter=',', dtype=floatX)[:,1:]
+  mu, sg = np.mean(Xtr, 0, keepdims=1), np.std(Xtr, 0, keepdims=1)
+  Xtr = (Xtr - mu) / sg
+
+  # Map the output labels to a 1-hot representation for consistency purposes.
+  tmp = np.loadtxt('agrad/data/class_train_out.csv', \
+    delimiter=',', dtype=np.int8())[:,1]
+  Ytr = np.zeros((tmp.shape[0], 2), dtype=np.int8())
+  Ytr[np.arange(Ytr.shape[0]),tmp] = 1
+  Ytr = Ytr.astype(floatX)
+
+  # If for submission, return entire training as training, else split.
+  if for_submission:
+    Xte = np.loadtxt('agrad/data/class_test_in.csv', \
+      delimiter=',', dtype=floatX)[:,1:]
+    Xte = (Xte - mu) / sg
+    return shared(Xtr, 'Xtr'), shared(Ytr, 'Ytr'), shared(Xte, 'Xte')
+  else:
+    return shared(Xtr[:r], 'Xtr'), shared(Ytr[:r], 'Ytr'),\
+           shared(Xtr[r:], 'Xte'), shared(Ytr[r:], 'Yte')
+
+
+
+# Load the Kaggle density estimation data.
+def LoadMLPracticalDensity(n=0):
+  if n==0:
+    X = np.loadtxt('agrad/data/density.csv', delimiter=',', dtype=floatX)
+  elif n==1:
+    X = np.loadtxt('agrad/data/density1.csv', delimiter=',', dtype=floatX)
+  elif n==2:
+    X = np.loadtxt('agrad/data/density2.csv', delimiter=',', dtype=floatX)
+  else:
+    raise ValueError('Require n \in {0, 1, 2}')
+  Xc, Xd = X[:,[0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 11]], X[:,[9, 12, 13]]
+  return shared(X, 'X'), shared(Xc, 'Xc'), shared(Xd, 'Xd')
+
+
+
+# Load the Kaggle regression data.
+def LoadMLPracticalRegression():
+  xtr = np.loadtxt('agrad/data/xtr-regress.csv', delimiter=',', dtype=floatX)
+  ytr = np.loadtxt('agrad/data/ytr-regress.csv', delimiter=',', dtype=floatX)
+  xte = np.loadtxt('agrad/data/xte-regress.csv', delimiter=',', dtype=floatX)
+  xtr = shared(xtr.reshape((xtr.shape[0], 1))[:100], 'xtr')
+  ytr = shared(ytr.reshape((ytr.shape[0], 1))[:100], 'ytr')
+  xte = shared(xte.reshape((xte.shape[0], 1))[:], 'xte')
+  return xtr, ytr, xte
+    
+
+
+# Load the mnist data set (scaled between 0 and 1).
+def LoadMNIST(Ntrout=60000):
+
+  # Load as per Theano instructions.
+  f = gzip.open('mnist.pkl.gz', 'rb')
+  train_set, valid_set, test_set = cPickle.load(f)
+  f.close()
+
+  # Extract input data sets.
+  Xtrnp = np.vstack((train_set[0], valid_set[0]))
+  Xtr = shared(Xtrnp[:Ntrout], 'Xtr')
+  Xte = shared(test_set[0], 'Xte')
+  Ntr, Nte = Xtr.get_value().shape[0], Xte.get_value().shape[0]
+
+  # Extract train label data and map to 1-hot representation.
+  Ytr_tmp = np.hstack((train_set[1], valid_set[1]))
+  Ytr = np.zeros((Ytr_tmp.shape[0], 10))
+  Ytr[np.arange(Ytr.shape[0]), Ytr_tmp] = 1
+  Ytr = Ytr.astype(floatX)
+
+  # Extract test label data and map to 1-hot representation.
+  Yte_tmp = test_set[1]
+  Yte = np.zeros((Nte, 10))
+  Yte[np.arange(Nte), Yte_tmp] = 1
+  Yte = Yte.astype(floatX)
+
+  # Return data, building label DataMatrix objects.
+  Ytr = shared(Ytr[:Ntrout], 'Ytr')
+  Yte = shared(Yte, 'Yte')
+  return Xtr, Ytr, Xte, Yte
+
+
+
+# Load the Frey Face data with the first 1500 images as training by default.
+def LoadFreyFace(Ntrout=1500):
+  Xtmp = np.genfromtxt('freyface.csv', delimiter=',') / 255.0
+  Xtr, Xte = Xtmp[:Ntrout], Xtmp[Ntrout:]
+  return shared(Xtr.astype(floatX), 'Xtr'), shared(Xte.astype(floatX), 'Xte')
+
+
+
+def GenerateGaussians(N, Ntr):
+
+  # Generate the data.  
+  mu0, mu1 = np.array([1.0, 1.0]), np.array([-1.0, -1.0])
+  sg = np.array([[1.0, -0.75], [-0.75, 1.0]])
+  X0 = rnd.multivariate_normal(mu0, sg, size=(N)).astype(floatX)
+  X1 = rnd.multivariate_normal(mu1, sg, size=(N)).astype(floatX)
+  Y0 = np.hstack((np.ones((N, 1)), np.zeros((N, 1)))).astype(floatX)
+  Y1 = np.hstack((np.zeros((N, 1)), np.ones((N, 1)))).astype(floatX)
+
+  # Permute the data and split to return.
+  idx = rnd.permutation(2*N)
+  X, Y = np.vstack((X0, X1))[idx], np.vstack((Y0, Y1))[idx]
+  return shared(X[:Ntr], 'Xtr'), shared(Y[:Ntr], 'Ytr'), \
+    shared(X[Ntr:], 'Xte'), shared(Y[Ntr:], 'Yte')
+
+
+def main():
+
+  rnd.seed(15485863)
+
+  """Xtr, Ytr, Xte, Yte = LoadMLPracticalClassification(0)
+  Xtr, Ytr, Xte = LoadMLPracticalClassification()
+  Xtr, Ytr, Xte, Yte = LoadMNIST()
+  print(Xtr.get_value().shape)
+  print(Yte.get_value().shape)
+  print(Xte.get_value().shape)
+  print(Yte.get_value().shape)"""
+  Xtr, Ytr, Xte, Yte = GenerateGaussians(100, 100)
+
+if __name__ == '__main__':
+  main()  
