@@ -39,7 +39,7 @@ floatX = th.config.floatX
 # theta - Theano shared variables.
 # 
 def ConstructAE(Xtr, Denc=[500], Dz=20, Ddec=[500], f=T.tanh, s2=1.0, \
-  inf=AdaGrad(0.01), otype='binary'):
+  inf=AdaGrad(0.01)):
 
   theta = []
 
@@ -48,40 +48,31 @@ def ConstructAE(Xtr, Denc=[500], Dz=20, Ddec=[500], f=T.tanh, s2=1.0, \
   Wenc, benc = mlp.WeightMatrices([Dobs] + Denc), mlp.BiasVectors(Denc)
   Hz = mlp.ConstructMLP(X, Wenc, benc, f)
   Wz, bz = mlp.WeightMatrix(Denc[-1], Dz, 'Wz'), mlp.BiasVector(Dz, 'bz')
-  Z = T.dot(Hz, Wz) + bz
+  Z = f(T.dot(Hz, Wz) + bz)
   theta += Wenc + benc + [Wz, bz]
 
   # Construct decoder network. Type of output depends upon otype.
   Wdec, bdec = mlp.WeightMatrices([Dz] + Ddec), mlp.BiasVectors(Ddec)
   Hx = mlp.ConstructMLP(Z, Wdec, bdec, f)
   theta += Wdec + bdec
-  if otype=='binary':
-    Wout = mlp.WeightMatrix(Ddec[-1], Dobs, 'Wout')
-    bout = mlp.BiasVector(Dobs, 'bout')
-    Xpr = lpdf.OutToSimplex(Hx, Wout, bout)
-    loglik = lpdf.bernoulli(X, Xpr)
-    theta += [Wout, bout]
-  elif otype == 'cont':
-    Wmu, Wlogs2, bmu, blogs2 = mlp.WeightMatrix(Ddec[-1], Dobs, 'Wmu'), \
-      mlp.WeightMatrix(Ddec[-1], Dobs, 'Wlogs2'), \
-      mlp.BiasVector(Dobs, 'bmu'), mlp.BiasVector(Dobs, 'blogs2')
-    Xpr = lpdf.OutToProbs(Hx, Wmu, bmu)
-    Xlogs2 = lpdf.OutToReal(Hx, Wlogs2, blogs2)
-    loglik = lpdf.indep_normal(X, Xpr, Xlogs2)
-    theta += [Wmu, Wlogs2, bmu, blogs2]
-  else:
-    raise ValueError('otype currently only supports binary.')
 
-  # Define prior and compute log joint.
-  logprior = mlp.ConstructNormalPrior(theta, s2)
-  logjoint = loglik + logprior + mlp.ConstructNormalPrior([Z], 1.0)
+  # Map to output. Looking to minimise the squared-error (se).
+  Wout = mlp.WeightMatrix(Ddec[-1], Dobs, 'Wout')
+  bout = mlp.BiasVector(Dobs, 'bout')
+  Xpr = lpdf.OutToProbs(Hx, Wout, bout)
+  se = T.sum(T.sqr(X - Xpr))
+  theta += [Wout, bout]
+
+  # Add weight decay (equivalent to normal prior).
+  weightdecay = mlp.ConstructNormalPrior(theta, s2)
+  logjoint = -se + weightdecay
 
   # Build function to construct training procedure.
   updates = inf.construct(logjoint, theta)
   idx = T.ivector('idx')
   train = function(
     inputs=[idx],
-    outputs=loglik / X.shape[0],
+    outputs=se / X.shape[0],
     name='train',
     updates=updates,
     givens= { X : Xtr[idx] }
@@ -136,12 +127,12 @@ def LearnFreyFace(epochs=100, Dz=20, Ntr=1500):
 
   # Construct autoencoder.
   train, reconstruct, encode, decode, theta = ConstructAE( \
-    Xtr, Denc=[200], Dz=Dz, Ddec=[200], otype='cont', inf=AdaGrad(0.01))
+    Xtr, Denc=[200], Dz=Dz, Ddec=[200], inf=AdaGrad(0.01))
 
   # Train the autoencoder. Permute the order of the data after each epoch - 
   # if you don't do this then you get weird periodicities in the learning curve.
   print('Training the autoencoder.')
-  batch_size, loglik = 100, []
+  batch_size, mse = 100, []
   for i in range(epochs):
     idx = rnd.permutation(np.arange(Ntr)).astype(np.int32())
     lb = 0
@@ -149,13 +140,14 @@ def LearnFreyFace(epochs=100, Dz=20, Ntr=1500):
       ub = lb + batch_size
       if ub > Ntr:
         ub = Ntr
-      loglik.append(train(idx[lb:ub]))
+      mse.append(train(idx[lb:ub]))
       lb = ub
-    print('Epoch ' + str(i) + '. mean loglik = ' + str(loglik[-1]))
+    print('Epoch ' + str(i) + '. mse = ' + str(mse[-1]))
 
   # Save the learning curve.
-  plt.plot(loglik)
+  plt.plot(mse)
   plt.savefig('frey-loglik.pdf')
+  plt.close()
 
   # Compute reconstruction error. I'm using rmse.
   Xtrpr, Xtepr = reconstruct(Xtr.get_value()), reconstruct(Xte.get_value())
@@ -180,12 +172,12 @@ def LearnMNIST(epochs=25, Dz=20, Ntr=50000):
 
   # Construct autoencoder.
   train, reconstruct, encode, decode, theta = ConstructAE( \
-    Xtr, Denc=[500], Dz=Dz, Ddec=[500], otype='binary', inf=AdaGrad(0.01))
+    Xtr, Denc=[500], Dz=Dz, Ddec=[500], inf=AdaGrad(0.01))
 
   # Train the autoencoder. Permute the order of the data after each epoch - 
   # if you don't do this then you get weird periodicities in the learning curve.
   print('Training the autoencoder.')
-  batch_size, loglik = 100, []
+  batch_size, mse = 100, []
   for i in range(epochs):
     idx = rnd.permutation(np.arange(Ntr)).astype(np.int32())
     lb = 0
@@ -193,13 +185,14 @@ def LearnMNIST(epochs=25, Dz=20, Ntr=50000):
       ub = lb + batch_size
       if ub > Ntr:
         ub = Ntr
-      loglik.append(train(idx[lb:ub]))
+      mse.append(train(idx[lb:ub]))
       lb = ub
-    print('Epoch ' + str(i) + '. mean loglik = ' + str(loglik[-1]))
+    print('Epoch ' + str(i) + '. mse = ' + str(mse[-1]))
 
   # Save the learning curve.
-  plt.plot(loglik)
-  plt.savefig('mnist-loglik.pdf')
+  plt.plot(mse)
+  plt.savefig('mnist-mse.pdf')
+  plt.close()
 
   # Compute reconstruction error. I'm using rmse.
   Xtrpr, Xtepr = reconstruct(Xtr.get_value()), reconstruct(Xte.get_value())
@@ -214,10 +207,10 @@ def LearnMNIST(epochs=25, Dz=20, Ntr=50000):
 # Uses 1500 images as training data for Frey Face and 50000 for mnist.
 def main():
 
-  # Seed with a large-ish prime.
+  """# Seed with a large-ish prime.
   rnd.seed(15485863)
 
-  """# Appears to still be improving after 200 iterations.
+  # Appears to still be improving after 200 iterations.
   Dz = 2
   reconstruct, encode, decode = LearnFreyFace(epochs=1000, Dz=Dz, Ntr=1500)
 
@@ -238,7 +231,6 @@ def main():
     plt.imshow(np.reshape(decode(Z), (28, 28)), cmap='gray')
     plt.colorbar()
     plt.show()
-  
 
 if __name__ == '__main__':
   main()

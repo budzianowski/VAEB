@@ -1,0 +1,232 @@
+import abc
+from datatensor import DataTensor
+import theano.tensor as T
+import numpy as np
+import theano as th
+from theano import shared
+
+floatX = th.config.floatX
+
+class InferenceAlgorithm(object):
+  __metaclass__ = abc.ABCMeta
+
+  # Return the name of the concrete inference algorithm.
+  @abc.abstractmethod
+  def name():
+    return
+
+  # Return an augmented computation graph which will
+  # perform inference, as well as a list of tensors
+  # which can be used as parameters.
+  #
+  # Inputs:
+  # f - model computation graph.
+  # theta - list of DataTensor parameters to update.
+  #
+  # Outputs:
+  # g - augmented computation graph with inference routine.
+  # inputs - a list of input tensors to be required at infer-time.
+  # updates - a list of tuples defining updates to perform.
+  #
+  @abc.abstractmethod
+  def construct(f):
+    return
+
+  # Return a tuple of input values for use at infer-time.
+  #
+  # Outputs:
+  # Tuple of algorithm inputs.
+  #
+  @abc.abstractmethod
+  def getinputs():
+    return
+
+# Class implementing stochastic gradient ascent.
+class GradientAscent(InferenceAlgorithm):
+
+  # Is stochastic gradient ascent if a subset of the data is used in the model.
+  def name(self):
+    return '(Stochastic) Gradient Ascent'
+
+  # Doesn't actualy alter the model f, does all of the work in the updates.
+  # Provides the learning rate as a parameter.
+  def construct(self, f, theta):
+    updates = [(t.shared, t.shared + self.__eta_T * T.grad(f, t.tensor)) \
+      for t in theta]
+    return [self.__eta_T], updates
+
+  # Returns the value of eta to use.
+  def getinputs(self):
+    return [self.eta]
+
+  # Learning rate property, eta. Must be strictly positive.
+  def __SetEta(self, eta):
+    if eta > 0:
+      self.__eta = eta
+    else:
+      raise ValueError('eta must be greater than zero.')
+  def __GetEta(self):
+    return self.__eta
+  eta = property(fget=__GetEta, fset=__SetEta)
+
+  # Set the initial learning rate.
+  def __init__(self, eta):
+    self.eta = eta
+    self.__eta_T = T.scalar('eta')
+
+
+# Class implementing AdaDelta for adaptive learning rates, insensitive to the
+# free parameters. This should be a substantially improvement over Vanilla SGA.
+# (Note: Implementation performs maximisation rather than minimisation.)
+class AdaDelta(InferenceAlgorithm):
+
+  # Is stochastic gradient ascent if a subset of the data is used in the model.
+  def name(self):
+    return 'AdaDelta (Zeiler 2012)'
+
+  # Doesn't actualy alter the model f, does all of the work in the updates.
+  # Provides the learning rate as a parameter.
+  def construct(self, f, theta):
+    updates = []
+    for i in range(len(theta)):
+
+      # Define the initialisation for the logged quantities.
+      dx_ac = shared(np.zeros(theta[i].get_value().shape, dtype=floatX))
+      g_ac  = shared(np.zeros(theta[i].get_value().shape, dtype=floatX))
+
+      # Define the new variables used to update stuff.
+      g = T.grad(f, theta[i])
+      g_ac_new = self.rho * g_ac + (1.0 - self.rho) * (g ** 2)
+      dx = T.sqrt(dx_ac + self.epsilon) * g / T.sqrt(g_ac_new + self.epsilon)
+
+      # Perform the updates using the computed quantities.
+      updates.append((g_ac, g_ac_new))      
+      updates.append((theta[i], theta[i] + dx))
+      updates.append((dx_ac, self.rho * dx_ac + (1.0 - self.rho) * (dx ** 2)))
+
+    return updates
+
+  # Returns the value of rho to use.
+  def getinputs(self):
+    return []
+
+  # "Momentum" preservation, rho.
+  def __SetRho(self, rho):
+    if rho > 0 and rho > 1:
+      self.__rho = rho
+    else:
+      raise ValueError('rho must be greater than zero and less than one.')
+  def __GetRho(self):
+    return self.__rho
+  eta = property(fget=__GetRho, fset=__SetRho)
+
+  # Conditioning constant, epsilon.
+  def __SetEpsilon(self, epsilon):
+    if epsilon > 0:
+      self.__epsilon = epsilon
+    else:
+      raise ValueError('epsilon must be greater than zero.')
+  def __GetEpsilon(self):
+    return self.__epsilon
+  epsilon = property(fget=__GetEpsilon, fset=__SetEpsilon)
+
+  # Set the initial learning rate.
+  def __init__(self, rho, epsilon):
+    self.rho = rho
+    self.__rho_T = T.scalar('rho')
+    self.epsilon = epsilon
+    self.__eps_T = T.scalar('epsilon')
+
+
+# Class implementing AdaGrad for adaptive learning rates.
+class AdaGrad(InferenceAlgorithm):
+
+  # Is stochastic gradient ascent if a subset of the data is used in the model.
+  def name(self):
+    return 'AdaGrad'
+
+  # Provides the learning rate as a parameter.
+  def construct(self, f, theta):
+    updates = []
+    for i in range(len(theta)):
+
+      # Define the initialisation for the logged quantities.
+      g_ac  = shared(np.zeros(theta[i].get_value().shape, dtype=floatX))
+
+      # Define the new variables used to update stuff.
+      g = T.grad(f, theta[i])
+      g_ac_new = g_ac + T.sqr(g)
+      dx = self.eta * g / (T.sqrt(g_ac_new) + 1e-6)
+
+      # Perform the updates using the computed quantities.
+      updates.append((g_ac, g_ac_new))      
+      updates.append((theta[i], theta[i] + dx))
+
+    return updates
+
+  # Returns the value of rho to use.
+  def getinputs(self):
+    return []
+
+  # "Momentum" preservation, rho.
+  def __SetEta(self, eta):
+    if eta > 0:
+      self.__eta = eta
+    else:
+      raise ValueError('eta must be greater than zero and less than one.')
+  def __GetEta(self):
+    return self.__eta
+  eta = property(fget=__GetEta, fset=__SetEta)
+
+  # Set the initial learning rate.
+  def __init__(self, eta):
+    self.eta = eta
+    self.__eta_T = T.scalar('eta')
+    
+    
+    
+
+# Class implementing Hamiltonian Monte Carlo.
+class HamiltonianMonteCarlo(InferenceAlgorithm):
+
+  # Is stochastic gradient ascent if a subset of the data is used in the model.
+  def name(self):
+    return 'Hamiltonian Monte Carlo'
+
+  # Doesn't actualy alter the model f, does all of the work in the updates.
+  # Provides the learning rate as a parameter.
+  def construct(self, f, theta):
+    updates = [(t.shared, t.shared + self.__eta_T * T.grad(f, t.tensor)) for t in theta]
+    return [self.__eta_T], updates
+
+  # Returns the value of eta to use.
+  def getinputs(self):
+    return [self.__eps, self.__L, self.__M]
+
+  # Step-size property, epsilon. Must be strictly positive real.
+  def __SetEpsilon(self, eps):
+    if eta > 0:
+      self.__eps = eps
+    else:
+      raise ValueError('epsilon must be greater than zero.')
+  def __GetEpsilon(self):
+    return self.__eps
+  epsilon = property(fget=__GetEpsilon, fset=__SetEpsilon)
+
+  # Leap-frog step count L. Must be strictly positive integer.
+  def __SetL(self, L):
+    if L > 0:
+      self.__L = L
+    else:
+      raise ValueError('L must be a strictly positive integer.')
+  def __GetL(self):
+    return self.__L
+  L = property(fget=__GetL, fset=__SetL)
+
+  # Set the initial learning rate.
+  def __init__(self, epsilon, L):
+    self.epsilon = epsilon
+    self.__epsilon_T = T.scalar('epsilon')
+    self.L = L
+    self.__L_T = T.iscalar('L')
+
