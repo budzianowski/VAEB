@@ -13,5 +13,5 @@ NUM_FREY_EPOCHS=70000   #enough to get more than 1e8 training samples with each 
 LATENT_SIZES=( '2' '5' '10' '20' )
 for LATENT_SIZE in "${LATENT_SIZES[@]}"
 do
-    ./run_on_gpu.sh -continuous --n_latent $LATENT_SIZE -n_epochs $NUM_FREY_EPOCHS --trace_file res/frey_${LATENT_SIZE}.csv
+    ./run_on_gpu.sh --continuous --n_latent $LATENT_SIZE -n_epochs $NUM_FREY_EPOCHS --trace_file res/frey_${LATENT_SIZE}.csv
 done
