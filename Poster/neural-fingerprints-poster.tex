@@ -10,6 +10,7 @@
 
 
 \documentclass[landscape,a0b,final,a4resizeable]{include/a0poster}
+\usepackage[utf8]{inputenc}
 
 \usepackage{multicol}
 \usepackage{color}
@@ -55,15 +56,15 @@
 %%% Cambridge Logo
 \begin{minipage}[c]{\logowidth}
   \begin{center}
-    \includegraphics[width=10cm]{badges/cambridgecrest}
+    \includegraphics[width=7cm]{badges/cambridgecrest}
   \end{center}
 \end{minipage}
 %
 %%% Title
 \begin{minipage}[c][9cm][c]{0.76\textwidth}
   \begin{center}
-    {\sffamily \VeryHuge \textbf{Convolutional Networks on Graphs\\[4mm] for Learning Molecular Fingerprints}}\\[10mm]
-    {\huge\sffamily \Huge David Duvenaud*, Dougal Maclaurin*, Jorge Aguilera-Iparraguirre \\[7.5mm]
+    {\sffamily \VeryHuge \textbf{Auto-Encoding Variational Bayes}}\\[10mm]
+    {\huge\sffamily \Huge Paweł Budzianowski, ,   \\[7.5mm]
     %\texttt{\{ti242, dkd23, zoubin\}@cam.ac.uk}
     }
   \end{center}
@@ -162,25 +163,30 @@ Comparison of learning
 \vspace{0.5em}
 
 \begin{center}
-\includegraphics[width=.5\columnwidth]{figures/fig_2.pdf}
+\includegraphics[width=.8\columnwidth]{../res/mnist_LAvsLB}
 \end{center}
 
 \vspace{0.5em}
 
 \mysection{Visualisation of learned manifolds}
 
-Comparison of learning
+It is possible to observe what the encoder learnt during training if we choose a low-dimensional latent space e.g. $2D$. The linearly spaced grid of coordinates over the unit square is mapped through the inverse CDF of the Gaussian (our prior for the latent space is Gaussian) to obtain the value of $\mathbf{z}$. Then, we plotted the output of our decoder $p_{\mathbf{\theta}} (\mathbf{x}| \mathbf{z})$ with the estimated parameters $\mathbf{\theta}$.
 
 \vspace{0.5em}
 
+\begin{tabular}{cc}
+\begin{minipage}[c]{0.48\columnwidth}
+\includegraphics[width=.8\columnwidth]{../freyFaces/MNIST}
+\end{minipage} & 
+\begin{minipage}[c]{0.48\columnwidth}
 \begin{center}
-\includegraphics[width=.5\columnwidth]{figures/fig_2.pdf}
+\vspace{0.5cm}
+\includegraphics[width=.7\columnwidth]{../freyFaces/FREY}
 \end{center}
+\end{minipage}
+\end{tabular}
 
 \vspace{0.5em}
-
-
-
 
 \newpage %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -188,75 +194,59 @@ Comparison of learning
 \mysection{Full VB}
 
 Large random weights give similar behavior to circular fingeprints:
-\vspace{0.5em}
-
-\begin{tabular}{cc}
-\begin{minipage}[c]{0.48\columnwidth}
-\includegraphics[width=\columnwidth]{figures/fig_2.pdf}
-\end{minipage} & 
-\begin{minipage}[c]{0.48\columnwidth}
-\begin{center}
-\vspace{0.5cm}\includegraphics[width=\columnwidth]{figures/fig_3.pdf}
-\end{center}
-\end{minipage}
-\end{tabular}
 
 \vspace{0.5em}
 
 Small random weights already much better than circular fingerprints!
-
 Can do even better by optimizing for given task.
 
 \vspace{1in}
 
 \mysection{Architecture experiments}
 
-We tested various set-up of the autoencoder
+We examined various changes to the original architecture of the auto-encoder to test the robustness and flexibility of the model which lead to improvement in terms of optimising the lower bound and computational efficiency.
 
 \begin{tabular}{cc}
 \begin{minipage}[c]{0.25\columnwidth}
 \begin{itemize}
-\item Increasing the depth of the encoder
+\item Different activation functions.
 \end{itemize}
 \end{minipage} & 
 \begin{minipage}[c]{0.75\columnwidth}
-%\includegraphics[width=1.0\columnwidth, clip, trim=4mm 0mm 4mm 4mm]{figures/how-fingerprints.png}
+\includegraphics[width=1.0\columnwidth, clip, trim=4mm 0mm 4mm 4mm]{../res/mnist_activations}
 \end{minipage}
 \end{tabular}
 
+\vspace{0.5em}
 
 \begin{tabular}{cc}
 \begin{minipage}[c]{0.25\columnwidth}
 \begin{itemize}
-\item Different activations functions
+\item Increasing the depth of the encoder.
 \end{itemize}
 \end{minipage} & 
 \begin{minipage}[c]{0.75\columnwidth}
-%\includegraphics[width=1.0\columnwidth, clip, trim=4mm 0mm 4mm 4mm]{figures/how-fingerprints.png}
+\includegraphics[width=1.0\columnwidth, clip, trim=4mm 0mm 4mm 4mm]{../res/mnist_depth}
 \end{minipage}
 \end{tabular}
 
+\vspace{0.5em}
 
-\begin{tabular}{cc}
-\begin{minipage}[c]{0.25\columnwidth}
-\begin{itemize}
-\item Different activations functions
-\end{itemize}
-\end{minipage} & 
-\begin{minipage}[c]{0.75\columnwidth}
-\includegraphics[width=1.0\columnwidth, clip, trim=4mm 0mm 4mm 4mm]{figures/mnist_LAvsLB}
-\end{minipage}
-\end{tabular}
-\mysection{Conclusion}
+\mysection{Future works}
 
 \begin{itemize}
-\item Can learn graph features end-to-end!
-\item Works on other types of graphs too 
-\item Code at \url{github.com/HIPS/neural-fingerprint}
-\item Autodiff package that works on standard Numpy code:\\ \url{github.com/HIPS/autograd}
+\item Scheduled training of VAEB $[2]$.
+\item
+\item 
 \end{itemize}
 
+\vspace{0.5em}
 
+\mysection{References}
+\begin{enumerate}
+\item Kingma, D. P., and  Welling M., "Auto-encoding variational bayes." arXiv preprint arXiv:1312.6114 (2013).
+\item Geras, K. J., and Sutton C., "Scheduled denoising autoencoders." arXiv preprint arXiv:1406.3269 (2014).
+\end{enumerate}
 
 \end{multicols}
 \end{poster}
