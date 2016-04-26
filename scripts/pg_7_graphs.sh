@@ -8,6 +8,7 @@ do
     ./run_on_gpu.sh --n_latent $LATENT_SIZE --n_epochs $NUM_MNIST_EPOCHS --trace_file res/mnist_${LATENT_SIZE}.csv
 done
 
+
 #FREYFACE
 NUM_FREY_EPOCHS=70000   #enough to get more than 1e8 training samples with each epoch of 1500 examples
 LATENT_SIZES=( '2' '5' '10' '20' )
