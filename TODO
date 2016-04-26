@@ -1,0 +1,21 @@
+TODO:
+
+Experiments:
+  What inference procedure to use? (Adagrad)
+  Direct comparison of our results and theirs - do we recover exactly what they got?
+  How do different activation functions work?
+  La vs Lb - just look at learning curves for one set of parameters? Or over a
+    range of parameters?
+  Reconstruction error - vanilla-ae vs vaeb.
+  Sparse binary-inducing prior on latent space - spectrum of sparsity enforcing.
+
+Write up:
+  Theory (Will)
+  Experimental results (see above).
+  Some conclusions?
+
+Poster:
+  Theory VAE / AE - similarities vs dissimilarities.
+  Pictures of originals vs reconstructions.
+  Reconstruction errors.
+  Print it out!
