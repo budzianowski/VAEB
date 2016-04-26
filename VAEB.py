@@ -199,7 +199,6 @@ class VAEB(object):
 
             #loading data in a load func, little hacky, but hey
             if continuous :
-                print "CONTINUOUSE"
                 with open('freyfaces.pkl', 'rb') as f :
                     data = pickle.load(f)  # only 1965 observations
                     f.close()
@@ -239,7 +238,6 @@ class VAEB(object):
     def reconstruct(self, x, n_samples) :
         mu, log_sigma = self.encoder(x)
         if n_samples <= 0 :
-            #just take maximum likelihood estimate of z
             y = self.decoder(mu)
         else :
             #sample from posterior
@@ -262,11 +260,14 @@ class VAEB(object):
                 y_log_sigma = y_log_sigma / n_samples
                 y = (y_mu, y_log_sigma)
             else :
-                y = y / n_samples
+                y = (y / n_samples)
         if self.continuous :
-            I = np.eye(mu.shape[1])
-            cov = (np.exp(log_sigma)**2) * I
-            y = np.random.multivariate_normal(y_mu.reshape(560), y_log_sigma)  # 560 pixels
+            (y_mu, y_log_sigma) = y
+            I = T.eye(y_mu.shape[0])
+            cov = (T.pow(T.exp(y_log_sigma), 2)) * I
+            y = np.random.multivariate_normal(y_mu.eval(), cov.eval())
+        else :
+            y = y.eval()
         return y
 
     def posterior_log_prob(self, x, y) :
@@ -416,10 +417,8 @@ def get_arg(arg, args, default, type_) :
 
 
 def get_flag(flag, args) :
-    print('flag :\n{0}'.format(flag))
     flag = '--'+flag
     have_flag = flag in args
-    print('have_flag :\n{0}'.format(have_flag))
     if have_flag :
         args.remove(flag)
 
