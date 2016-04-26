@@ -37,9 +37,7 @@ command_line_args = {'seed' : (15485863, int),
 command_line_flags = ['continuous', 'generic_estimator']
 
 
-def reparam_trick(mu, log_sigma) :
-    # creating random variable for reparametrization trick
-    srng = T.shared_randomstreams.RandomStreams(seed=10)                #TODO want another seed?
+def reparam_trick(mu, log_sigma, srng) :
     eps = srng.normal(mu.shape)  # shared random variable, Theano magic
 
     # reparametrization trick
@@ -135,6 +133,8 @@ class VAEB(object):
         self.sigmaInit = 0.01    # variance to initialize parameters, from pg. 7
         self.L = L  # number of samples from p(z|x)
         self.genericEstimator = genericEstimator
+        # creating random variable for reparametrization trick
+        self.srng = T.shared_randomstreams.RandomStreams(seed=10)                #TODO want another seed?
 
         if params is None :
             self.initialize_params()
@@ -199,6 +199,7 @@ class VAEB(object):
 
             #loading data in a load func, little hacky, but hey
             if continuous :
+                print "CONTINUOUSE"
                 with open('freyfaces.pkl', 'rb') as f :
                     data = pickle.load(f)  # only 1965 observations
                     f.close()
@@ -235,6 +236,39 @@ class VAEB(object):
 
             return y
 
+    def reconstruct(self, x, n_samples) :
+        mu, log_sigma = self.encoder(x)
+        if n_samples <= 0 :
+            #just take maximum likelihood estimate of z
+            y = self.decoder(mu)
+        else :
+            #sample from posterior
+            if self.continuous :
+                #hack to find out size of variables
+                (y_mu, y_log_sigma) = self.decoder(mu)
+                (y_mu, y_log_sigma) = (T.zeros_like(y_mu), T.zeros_like(y_log_sigma))
+            else :
+                y = T.zeros(x.shape)
+            for i in range(n_samples) :
+                z = reparam_trick(mu, log_sigma, self.srng)
+                if self.continuous :
+                    (new_y_mu, new_y_log_sigma) = self.decoder(z)
+                    y_mu = y_mu + new_y_mu
+                    y_log_sigma = y_log_sigma + new_y_log_sigma
+                else :
+                    y = y + self.decoder(z)
+            if self.continuous :
+                y_mu = y_mu / n_samples
+                y_log_sigma = y_log_sigma / n_samples
+                y = (y_mu, y_log_sigma)
+            else :
+                y = y / n_samples
+        if self.continuous :
+            I = np.eye(mu.shape[1])
+            cov = (np.exp(log_sigma)**2) * I
+            y = np.random.multivariate_normal(y_mu.reshape(560), y_log_sigma)  # 560 pixels
+        return y
+
     def posterior_log_prob(self, x, y) :
         if self.continuous:
             (mu, log_sigma) = y
@@ -252,7 +286,7 @@ class VAEB(object):
         SGVB = 0
         for ii in range(self.L):
             # p(x|z)
-            z = reparam_trick(mu, log_sigma)
+            z = reparam_trick(mu, log_sigma, self.srng)
             y = self.decoder(z)
             # prior
             prior = (- 0.5 * np.log(2 * np.pi) - 0.5 * z ** 2).sum(axis=1, keepdims=True)
@@ -269,7 +303,7 @@ class VAEB(object):
         SGVB = 0
         for ii in range(self.L):
             # p(x|z)
-            z = reparam_trick(mu, log_sigma)
+            z = reparam_trick(mu, log_sigma, self.srng)
             # decoding
             y = self.decoder(z)
             logpXgivenZ = self.posterior_log_prob(x, y)
@@ -382,8 +416,10 @@ def get_arg(arg, args, default, type_) :
 
 
 def get_flag(flag, args) :
+    print('flag :\n{0}'.format(flag))
     flag = '--'+flag
     have_flag = flag in args
+    print('have_flag :\n{0}'.format(have_flag))
     if have_flag :
         args.remove(flag)
 
@@ -489,6 +525,7 @@ def train_model(args) :
         model.save(save_file)
     
     return model, data
+        
 
 def main() :
     args = parse_args()
@@ -498,27 +535,6 @@ def main() :
         model, data = train_model(args)
     else :
         model, data = VAEB.load(args['load_file'])
-
-    if model.continuous :
-        (x_train, x_valid) = data
-        x = x_train[1]
-        
-        mu, log_sigma = model.encoder(x)
-
-        z = reparam_trick(mu, log_sigma)
-
-        # decoding
-        (mu, sigma) = model.decoder(z)
-    else :
-        (x_train, y_train), (x_valid, y_valid), (x_test, y_test) = data
-        x = x_train[1]
-        
-        mu, log_sigma = model.encoder(x)
-
-        z = reparam_trick(mu, log_sigma.eval())
-
-        # decoding
-        y = model.decoder(z)
         
 
 if __name__ == '__main__':
