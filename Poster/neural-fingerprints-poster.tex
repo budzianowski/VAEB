@@ -94,7 +94,7 @@
 
 \begin{multicols}{3}
 
-\mysection{How to do regression on graphs?}
+\mysection{Problem Definition}
 
 %\vspace{-0.5in}
 
@@ -115,9 +115,9 @@
 
 %\vspace{-0.5in}
 
-\vspace{1.5in}
+\vspace{0.5in}
 
-\mysection{Circular fingerprints}
+\mysection{SGVB}
 
 %Also called Morgan fingerprints, or ECFP
 
@@ -149,44 +149,48 @@ Can be efficiently computed using local operations:
 
 \vspace{0.5in}
 
-Was state-of-the-art for large-scale regression and classification.
-
+\mysection{AEVB}
 
 
 \newpage %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-\mysection{Learning Curves - la vs lb}
+\mysection{Generic estimator versus default SGVB one}
+In the case of the non-Gaussian distributions, it is often impossible to obtain closed-form expression for the KL-divergence term which also requires estimation by sampling. This yields more generic estimator of the form:
+$$ \widetilde{\mathcal{L}}^{A}(\boldsymbol{\theta}, \boldsymbol{\phi}; \mathbf{x}^{(i)}) = \frac{1}{L} \sum_{l=1}^L \left( \log p_{\boldsymbol{\theta}}(\mathbf{x}^{(i)}, \mathbf{z}^{(i,l)}) - \log q_{\phi}(\mathbf{z}^{(i,l)} | \mathbf{x}^{(i)} \right).$$
 
-Comparison of learning
+We decided that it will be informative to compare the performance of both estimators using only one sample i.e. $L=1$.
 
 \vspace{0.5em}
 
 \begin{center}
-\includegraphics[width=.8\columnwidth]{../res/mnist_LAvsLB}
+\includegraphics[width=1\columnwidth]{../res/mnist_LAvsLB}
 \end{center}
 
 \vspace{0.5em}
 
 \mysection{Visualisation of learned manifolds}
 
-It is possible to observe what the encoder learnt during training if we choose a low-dimensional latent space e.g. $2D$. The linearly spaced grid of coordinates over the unit square is mapped through the inverse CDF of the Gaussian (our prior for the latent space is Gaussian) to obtain the value of $\mathbf{z}$. Then, we plotted the output of our decoder $p_{\mathbf{\theta}} (\mathbf{x}| \mathbf{z})$ with the estimated parameters $\mathbf{\theta}$.
+It is possible to observe what the encoder learnt during training if we choose a low-dimensional latent space e.g. $2D$. The linearly spaced grid of coordinates over the unit square is mapped through the inverse CDF of the Gaussian to obtain the value of $\mathbf{z}$ which can be used to sample from $p_{\mathbf{\theta}} (\mathbf{x}| \mathbf{z})$ with the estimated parameters $\boldsymbol{\theta}$.
 
 \vspace{0.5em}
 
 \begin{tabular}{cc}
 \begin{minipage}[c]{0.48\columnwidth}
-\includegraphics[width=.8\columnwidth]{../freyFaces/MNIST}
+\hspace{2em}
+\includegraphics[width=.6\columnwidth]{../freyFaces/MNIST}
 \end{minipage} & 
 \begin{minipage}[c]{0.48\columnwidth}
 \begin{center}
 \vspace{0.5cm}
-\includegraphics[width=.7\columnwidth]{../freyFaces/FREY}
+\includegraphics[width=.5\columnwidth]{../freyFaces/FREY}
 \end{center}
 \end{minipage}
 \end{tabular}
 
 \vspace{0.5em}
+
+\mysection{Reconstruction}
 
 \newpage %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -222,7 +226,7 @@ We examined various changes to the original architecture of the auto-encoder to 
 \begin{tabular}{cc}
 \begin{minipage}[c]{0.25\columnwidth}
 \begin{itemize}
-\item Increasing the depth of the encoder.
+\item ~~Increasing the depth of the encoder.
 \end{itemize}
 \end{minipage} & 
 \begin{minipage}[c]{0.75\columnwidth}
@@ -233,13 +237,10 @@ We examined various changes to the original architecture of the auto-encoder to 
 \vspace{0.5em}
 
 \mysection{Future works}
-
-\begin{itemize}
-\item Scheduled training of VAEB $[2]$.
-\item
-\item 
-\end{itemize}
-
+% enumerate doesnt seem to work here..
+I.~~ Scheduled training of VAEB $[2]$.\\
+II. ~~\\
+III. ~~\\
 \vspace{0.5em}
 
 \mysection{References}
