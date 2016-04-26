@@ -6,6 +6,7 @@
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{lmodern}
+\usepackage{subfiles}
 \newcounter{defcounter}
 \setcounter{defcounter}{0}
 
@@ -60,12 +61,18 @@ University of Cambridge}}\\
 \large\textbf{MLSALT 4}\\
 \vspace{.5cm}
 \large{Tom}\\
-\large{Will}\\
+\large{Will Tebbutt, wct23, Darwin College}\\
 \large{Paweł Budzianowski, pfb30, Clare Hall}\\
 \end{center} 
 
 \section{Introduction}
+\subfile{introduction/introduction.tex}
 
+\section{Stochastic Variational Inference}
+\subfile{svi/svi.tex}
+
+\section{The Variational Autoencoder}
+\subfile{vae/vae.tex}
 
 
 \begin{lstlisting}[ basicstyle=\small,language = python , breaklines=true]=
@@ -93,6 +100,9 @@ L2 norm & 0.834  & 0.120& 0.576\\
 \endminipage\hfill
   \caption[1]{Evaluations results on DSTC task with different specification parameter.}
 \end{figure}
+
+\section{Conclusion}
+\subfile{conclusion/conclusion.tex}
 
 \begin{thebibliography}{15}
 \bibitem{sutton} R.S. Sutton, A. G. Barto, \emph{Reinforcement Learning: An Introduction}, The MIT Press (March 1998), 2011.
