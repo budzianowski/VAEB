@@ -204,12 +204,16 @@ Compare reconstruction to Auto-encoder\\
 \end{center}
 \end{minipage}
 \end{tabular}
-Bayesian treatment also allows us to define a posterior over input space $p(x|z)$, to score input items using $p(x)$ and quantifies uncertainty of our estimate of $z\sim q(z|x)$
+Bayesian treatment also allows us to define a density over input space $p(x|z)$, to score input items using $p(x)$ and quantifies uncertainty of our estimate of $z\sim q(z|x)$
 
 \newpage %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 \mysection{Full VB}
+Possible to perform full VB on parameters:
+$$\mathcal{L}(\phi, \mathbf{X}) = \int q_\phi(\theta)(log\ p_\theta(X) + log\ p_\alpha(\theta) - log\ q_\phi(\theta)) d\theta$$
+Can once again use Monte Carlo estimate to approximate, and differentiate to perform SGVI. Yields a distribution over parameters rather than a point estimate.\\
+Implementation showed a decrease of variational lower bound, but no evidence of learning, possibly due to strict Gaussian assumptions of variational approximate posteriors.
 
 Large random weights give similar behavior to circular fingeprints:
 \begin{tabular}{cc}
