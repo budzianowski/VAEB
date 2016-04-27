@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2015.3.1)  27 APR 2016 03:41
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2015.3.1)  27 APR 2016 18:14
 entering extended mode
 **C:/Users/Will/Dropbox/University/MPhil*-*Cambridge/MLSALT4*-*Advanced*Machine
 *Learning/VAEB/Report/report.tex
@@ -698,34 +698,35 @@ LaTeX Warning: There were undefined references.
 
  ) 
 Here is how much of TeX's memory you used:
- 6114 strings out of 493921
- 83344 string characters out of 3144880
+ 6113 strings out of 493921
+ 83313 string characters out of 3144880
  155937 words of memory out of 3000000
- 9261 multiletter control sequences out of 15000+200000
- 47668 words of font info for 41 fonts, out of 3000000 for 9000
+ 9257 multiletter control sequences out of 15000+200000
+ 56489 words of font info for 44 fonts, out of 3000000 for 9000
  841 hyphenation exceptions out of 8191
- 27i,11n,35p,1278b,313s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 27i,11n,35p,1399b,306s stack positions out of 5000i,500n,10000p,200000b,50000s
 {C:/Program Files (x86)/MiKTeX 2.9/fonts/enc/dvips/lm/lm-ec.enc}{C:/Program F
 iles (x86)/MiKTeX 2.9/fonts/enc/dvips/lm/lm-rm.enc}{C:/Program Files (x86)/MiKT
 eX 2.9/fonts/enc/dvips/lm/lm-mathsy.enc}{C:/Program Files (x86)/MiKTeX 2.9/font
 s/enc/dvips/lm/lm-mathex.enc}{C:/Program Files (x86)/MiKTeX 2.9/fonts/enc/dvips
 /lm/lm-mathit.enc}<C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/lm/lmbx
 10.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/lm/lmbx12.pfb><C:/
-Program Files (x86)/MiKTeX 2.9/fonts/type1/public/lm/lmcsc10.pfb><C:/Program Fi
-les (x86)/MiKTeX 2.9/fonts/type1/public/lm/lmex10.pfb><C:/Program Files (x86)/M
-iKTeX 2.9/fonts/type1/public/lm/lmmi10.pfb><C:/Program Files (x86)/MiKTeX 2.9/f
-onts/type1/public/lm/lmmi5.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/p
-ublic/lm/lmmi7.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/lm/lmr
-10.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/lm/lmr12.pfb><C:/P
-rogram Files (x86)/MiKTeX 2.9/fonts/type1/public/lm/lmr5.pfb><C:/Program Files 
-(x86)/MiKTeX 2.9/fonts/type1/public/lm/lmr7.pfb><C:/Program Files (x86)/MiKTeX 
-2.9/fonts/type1/public/lm/lmri10.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/t
-ype1/public/lm/lmsy10.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public
-/lm/lmsy7.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/sy
-mbols/msbm10.pfb>
-Output written on report.pdf (3 pages, 244759 bytes).
+Program Files (x86)/MiKTeX 2.9/fonts/type1/public/lm/lmbx5.pfb><C:/Program File
+s (x86)/MiKTeX 2.9/fonts/type1/public/lm/lmbx7.pfb><C:/Program Files (x86)/MiKT
+eX 2.9/fonts/type1/public/lm/lmcsc10.pfb><C:/Program Files (x86)/MiKTeX 2.9/fon
+ts/type1/public/lm/lmex10.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/pu
+blic/lm/lmmi10.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/lm/lmm
+i5.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/lm/lmmi7.pfb><C:/P
+rogram Files (x86)/MiKTeX 2.9/fonts/type1/public/lm/lmr10.pfb><C:/Program Files
+ (x86)/MiKTeX 2.9/fonts/type1/public/lm/lmr12.pfb><C:/Program Files (x86)/MiKTe
+X 2.9/fonts/type1/public/lm/lmr5.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/t
+ype1/public/lm/lmr7.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/l
+m/lmri10.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/lm/lmsy10.pf
+b><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/lm/lmsy7.pfb><C:/Progra
+m Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
+Output written on report.pdf (3 pages, 279030 bytes).
 PDF statistics:
- 79 PDF objects out of 1000 (max. 8388607)
+ 89 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 
