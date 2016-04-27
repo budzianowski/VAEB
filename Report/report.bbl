@@ -1,5 +1,11 @@
 \begin{thebibliography}{}
 
+\bibitem[Duchi et~al., 2011]{duchi2011adaptive}
+Duchi, J., Hazan, E., and Singer, Y. (2011).
+\newblock Adaptive subgradient methods for online learning and stochastic
+  optimization.
+\newblock {\em The Journal of Machine Learning Research}, 12:2121--2159.
+
 \bibitem[Maclaurin et~al., ]{maclaurinautograd}
 Maclaurin, D., Duvenaud, D., and Adams, R.~P.
 \newblock Autograd: Effortless gradients in numpy.

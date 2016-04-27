@@ -45,7 +45,7 @@ where the $M$ observations in the mini-batch are drawn uniformly from the data s
 Similarly, if $\CondFunc{q_\phi}{\mathbf{z}}{\mathbf{x}}$ and $\Func{p_\mathbf{\theta}}{\mathbf{z}}$ are such that the KL-divergence between them has a tractable closed-form solution then we can use an approximate bound which we could reasonably expect to have a lower variance:
 \begin{align}
   \Func{\mathcal{L}}{\mathbf{\theta}, \phi; D} =& \,\,\Expect{\Func{q_\phi}{\mathbf{z}_1},...,\Func{q_\phi}{\mathbf{z}_N}}{\log \prod_{i=1}^{N} \CondFunc{p_\mathbf{\theta}}{\mathbf{x}_i}{\mathbf{z}_i}} - \DivKL{\prod_{i=1}^{N} \CondFunc{q_\phi}{\mathbf{z}_i}{\mathbf{x}_i}}{\prod_{i=1}^{N} \Func{p_\mathbf{\theta}}{\mathbf{z}_i}} \nonumber \\
-  =& \sum_{i=1}^{N} \Expect{\Func{q_\phi}{\mathbf{z}_i}}{\log \CondFunc{p_\mathbf{\theta}}{\mathbf{x}_i}{\mathbf{z}_i}} - \DivKL{\CondFunc{q_\phi}{\mathbf{z}_i}{\mathbf{x}_i}}{\Func{p_\mathbf{\theta}}{\mathbf{z}_i}} \nonumber \\
+  =& \sum_{i=1}^{N} \Expect{\CondFunc{q_\phi}{\mathbf{z}_i}{\mathbf{x}_i}}{\log \CondFunc{p_\mathbf{\theta}}{\mathbf{x}_i}{\mathbf{z}_i}} - \DivKL{\CondFunc{q_\phi}{\mathbf{z}_i}{\mathbf{x}_i}}{\Func{p_\mathbf{\theta}}{\mathbf{z}_i}} \nonumber \\
   \approx& \frac{N}{M} \sum_{i=1}^{M} \left[ \frac{1}{L} \sum_{l=1}^{L} \log \CondFunc{p_\mathbf{\theta}}{\mathbf{x}_i}{\mathbf{z}_{i,l}} - \DivKL{\CondFunc{q_{\phi}}{\mathbf{z}_i}{\mathbf{x}_i}}{\Func{p_\mathbf{\theta}}{\mathbf{z}_i}} \right] =: \Func{\tilde{\mathcal{L}}^B}{\mathbf{\theta}, \phi; D}, \label{eqn:Lb}
 \end{align}
 where $z_{i,l} = \Func{g_\phi}{\mathbf{x}_i, \mathbf{\epsilon}_{i,l}}$ and $\mathbf{\epsilon}_{i,l} \sim \Func{p}{\mathbf{\epsilon}}$.

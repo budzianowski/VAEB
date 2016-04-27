@@ -1,26 +1,30 @@
 \documentclass[../report.tex]{subfiles}
 \begin{document}
-This paper concerns itself with the scenario in which we wish to find a point-estimate to the parameters $\theta$ of some parametric model in which we generate each observations $\mathbf{x}_i$ by first sampling a ``local'' latent variable $\mathbf{z}_i \sim \PTheta{\mathbf{z}}$ and then sampling the associated observation $\mathbf{x}_i \sim \CondPTheta{\mathbf{x}}{\mathbf{z}}$. The conditional independence assumptions in this model are visualised in the graphical model in figure \ref{fig:graph}.
+This paper concerns itself with the scenario in which we wish to find a point-estimate to the parameters $\theta$ of some parametric model in which we generate each observations $\mathbf{x}_i$ by first sampling a ``local'' latent variable $\mathbf{z}_i \sim \PTheta{\mathbf{z}}$ and then sampling the associated observation $\mathbf{x}_i \sim \CondPTheta{\mathbf{x}}{\mathbf{z}}$. The conditional independence assumptions in this model are shown in the graphical model in figure \ref{fig:graph}.
 
-\begin{center}
+\begin{figure}[!htbp]
+\centering
 \begin{tikzpicture}
-\tikzstyle{main}=[circle, minimum size = 30mm, thick, draw =black!80, node distance = 48mm]
+\tikzstyle{main}=[circle, minimum size = 10mm, thick, draw =black!80, node distance = 16mm]
 \tikzstyle{connect}=[-latex, thick]
 \tikzstyle{box}=[rectangle, draw=black!100]
   \node[main, fill = white!100] (theta) {$\theta$};
-  \node[main, fill = white!100, right=of theta] (C1) {$\mathbf{z}_i$};
+  \node[main, fill = white!100, below=of theta] (C1) {$\mathbf{z}_i$};
   \node[main, fill = black!10, right=of C1] (X1) {$\mathbf{x}_i$};
   \path (theta) edge [connect] (C1)
-        (C1) edge [connect] (X1);
-  \node[rectangle, inner sep=0mm, fit= (C1) (X1),label=below right:$N$, yshift=0mm, xshift=32mm] {};
-  \node[rectangle, inner sep=10mm,draw=black!100, fit= (C1) (X1), yshift=-5mm] {};
+        (C1) edge [connect] (X1)
+        (theta) edge [connect] (X1);
+  \node[rectangle, inner sep=0mm, fit= (C1) (X1),label=below right:$N$, yshift=0mm, xshift=12mm] {};
+  \node[rectangle, inner sep=5mm,draw=black!100, fit= (C1) (X1), yshift=0mm] {};
   \path
     ([shift={(50\pgflinewidth,-50\pgflinewidth)}]current bounding box.south west)
     ([shift={( 50\pgflinewidth, -150\pgflinewidth)}]current bounding box.north east);
 \end{tikzpicture}
-\end{center}
+\caption{\label{fig:graph}Directed graphical model representing the conditional independencies in the proposed problem scenario. Each $i^{th}$ observation is conditionally independent given the model parameters $\theta$.}
+\end{figure}
 
-Autoencoding Variational Bayes makes two contributions in terms of methodology, introducing a differentiable stochastic estimator for the variational lower bound to the model evidence, using this to learn a recognition model to provide a fast method to compute an approximate posterior distribution over ``local'' latent variables given observations.
+The posterior $\CondPTheta{\mathbf{z}_i}{\mathbf{x}_i}$ is intractable for a continuous latent space whenever either the prior $\PTheta{\mathbf{z}_i}$ or the likelihood $\CondPTheta{\mathbf{x}_i}{\mathbf{z}_i}$ are non-Gaussian, meaning that approximate inference is required. To this end Autoencoding Variational Bayes makes two contributions in terms of methodology, introducing a differentiable stochastic estimator for the variational lower bound to the model evidence, using this to learn a recognition model to provide a fast method to compute an approximate posterior distribution over ``local'' latent variables given observations.
 
+In this report we will first discuss the methodological contributions of the Autoencoding Variational Bayes paper, with care taken to treat each of the afformentioned methodological contributions separately. We then discuss their use of this framework to derive the Variational Autoencoder, a model exactly of the form described above with a Gaussian prior, multi-layer perceptron (MLP) parameterised likelihood and MLP-parameterised recognition model. We reproduce the key experiments from the original paper and conduct several more including investigating the sensitivity of the reported results to the network architecture and whether the Variational Autoencoder provides improved reconstructive performance over a traditional ``vanilla'' autoencoder with the same architecture.
 
 \end{document}
