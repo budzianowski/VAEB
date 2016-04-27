@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2015.3.1)  27 APR 2016 02:28
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2015.3.1)  27 APR 2016 03:26
 entering extended mode
 **C:/Users/Will/Dropbox/University/MPhil*-*Cambridge/MLSALT4*-*Advanced*Machine
 *Learning/VAEB/Report/report.tex
@@ -653,11 +653,15 @@ LaTeX Warning: Citation `duchi2011adaptive' on page 1 undefined on input line 2
 
 {C:/ProgramData/MiKTeX/2.9/pdftex/config/pdftex.map}])
 ("C:\Users\Will\Dropbox\University\MPhil - Cambridge\MLSALT4 - Advanced Machine
- Learning\VAEB\Report\vae/vae.tex")
+ Learning\VAEB\Report\vae/vae.tex" [2])
+("C:\Users\Will\Dropbox\University\MPhil - Cambridge\MLSALT4 - Advanced Machine
+ Learning\VAEB\Report\recon/recon.tex")
+("C:\Users\Will\Dropbox\University\MPhil - Cambridge\MLSALT4 - Advanced Machine
+ Learning\VAEB\Report\fvb/fvb.tex")
 ("C:\Users\Will\Dropbox\University\MPhil - Cambridge\MLSALT4 - Advanced Machine
  Learning\VAEB\Report\conclusion/conclusion.tex")
 ("C:\Users\Will\Dropbox\University\MPhil - Cambridge\MLSALT4 - Advanced Machine
- Learning\VAEB\Report\report.bbl") [2]
+ Learning\VAEB\Report\report.bbl") [3]
 ("C:\Users\Will\Dropbox\University\MPhil - Cambridge\MLSALT4 - Advanced Machine
  Learning\VAEB\Report\report.aux")
 
@@ -665,9 +669,9 @@ LaTeX Warning: There were undefined references.
 
  ) 
 Here is how much of TeX's memory you used:
- 5542 strings out of 493921
- 74537 string characters out of 3144880
- 146471 words of memory out of 3000000
+ 5552 strings out of 493921
+ 75211 string characters out of 3144880
+ 148471 words of memory out of 3000000
  8713 multiletter control sequences out of 15000+200000
  47668 words of font info for 41 fonts, out of 3000000 for 9000
  841 hyphenation exceptions out of 8191
@@ -690,9 +694,9 @@ rogram Files (x86)/MiKTeX 2.9/fonts/type1/public/lm/lmr5.pfb><C:/Program Files
 ype1/public/lm/lmsy10.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public
 /lm/lmsy7.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/sy
 mbols/msbm10.pfb>
-Output written on report.pdf (2 pages, 227692 bytes).
+Output written on report.pdf (3 pages, 236529 bytes).
 PDF statistics:
- 76 PDF objects out of 1000 (max. 8388607)
+ 79 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 
