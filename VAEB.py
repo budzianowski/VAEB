@@ -32,9 +32,10 @@ command_line_args = {'seed' : (15485863, int),
                      'trace_file' : ('', str),          #if set, trace information will be written about number of training
                                                         #samples and lower bound
                      'save_file' : ('', str),           #if set will train model and save it to this file
-                     'load_file' : ('', str)}           #if set will load model from this file, and won't traina new model
+                     'load_file' : ('', str),           #if set will load model from this file, and won't traina new model
+                     'vb_param_file' : ('', str)}       #file where param values for full VB are stored
 #to add a new flag, simply add its name
-command_line_flags = ['continuous', 'generic_estimator']
+command_line_flags = ['continuous', 'generic_estimator', 'full_varational']
 
 
 def reparam_trick(mu, log_sigma, srng) :
@@ -46,7 +47,7 @@ def reparam_trick(mu, log_sigma, srng) :
     return z
 
 class VAEB(object):
-    def initialize_params(self) :
+    def initialize_params(self, params) :
         # Initialization of weights (notation from pg.11):
         initW = lambda dimIn, dimOut: self.prng.normal(0,  self.sigmaInit, (dimIn, dimOut)).astype(floatX)
         initB = lambda dimOut: np.zeros((dimOut, )).astype(floatX)
@@ -113,9 +114,23 @@ class VAEB(object):
             self.params = [self.W3, self.W4, self.W5, self.W1, self.W2, \
                 self.b3, self.b4, self.b5, self.b1, self.b2]
 
+        if self.fullVariational :
+            assert params is not None
+            self.params = params
+            self.full_variational_params = []
+            for param in params :
+                mus = th.shared(value=param.eval(), name=param.name + '_mu_vb')
+                values = T.ones_like(param) * self.fullVBSigmaInit
+                sigmas = th.shared(value=values.eval(), name=param.name + '_sigma_vb')
+                self.full_variational_params += [mus, sigmas]
+
+    def sample_variational_params(self) :
+        for i in range(len(self.params)) :
+            p = self.srng.normal(self.params[i].shape) * T.sqrt(T.sqr(self.full_variational_params[2*i+1])) + self.full_variational_params[2*i]
+
 
     def __init__(self, x_train, continuous, hidden_units, latent_size, batch_size,
-                 L, learning_rate, genericEstimator, params=None, prng=None, sigmaInit=None):
+                 L, learning_rate, genericEstimator, fullVariational, params=None, prng=None, sigmaInit=None):
 
         [self.N, self.input_size] = x_train.shape  # number of observations and features
         self.n_hidden_units = hidden_units
@@ -128,28 +143,42 @@ class VAEB(object):
         self.L = L  # number of samples from p(z|x)
         self.eps = 1e-6
         self.rho = 0.95
+        self.fullVBSigmaInit = 1e-3
         self.batch_size = batch_size
         self.prng = np.random.RandomState(10)
         self.sigmaInit = 0.01    # variance to initialize parameters, from pg. 7
         self.L = L  # number of samples from p(z|x)
         self.genericEstimator = genericEstimator
+        self.fullVariational = fullVariational
+
+        if self.fullVariational :
+            assert params is not None
+
         # creating random variable for reparametrization trick
         self.srng = T.shared_randomstreams.RandomStreams(seed=10)                #TODO want another seed?
 
         if params is None :
-            self.initialize_params()
-        else :
+            self.initialize_params(params)
+        elif not self.fullVariational :
             self.params = params
             if continuous :
                 [self.W3, self.W4, self.W5, self.W1, self.W2, self.W6, self.b3, self.b4, self.b5, self.b1, self.b2, self.b6] = self.params
             else :
                 [self.W3, self.W4, self.W5, self.W1, self.W2, self.b3, self.b4, self.b5, self.b1, self.b2] = self.params 
+        else :
+            self.initialize_params(params)
+            if continuous :
+                [self.W3, self.W4, self.W5, self.W1, self.W2, self.W6, self.b3, self.b4, self.b5, self.b1, self.b2, self.b6] = self.params
+            else :
+                [self.W3, self.W4, self.W5, self.W1, self.W2, self.b3, self.b4, self.b5, self.b1, self.b2] = self.params 
+            
 
 
         # ADA-GRAD parameters
         self.ADA = []
-        for param in self.params:
-            eps_p = np.zeros_like(param.get_value(borrow=True), dtype=floatX)
+        paramsForGradient = self.full_variational_params if self.fullVariational else self.params
+        for paramsForGradient in paramsForGradient:
+            eps_p = np.zeros_like(paramsForGradient.get_value(borrow=True), dtype=floatX)
             self.ADA.append(th.shared(eps_p, borrow=True))
 
         x_train = th.shared(np.asarray(x_train, dtype=floatX), name="x_train")
@@ -169,7 +198,6 @@ class VAEB(object):
             pickle.dump(self.prng, f)
             pickle.dump(self.sigmaInit, f)
             pickle.dump(self.L, f)
-            pickle.dump(self.genericEstimator, f)
 
             for p in self.params :
                 pickle.dump(p, f)
@@ -210,7 +238,8 @@ class VAEB(object):
                     data = pickle.load(f)  # 50000/10000/10000 observations
                     (x_train, y_train), (x_valid, y_valid), (x_test, y_test) = data
 
-            return VAEB(x_train, continuous, n_hidden_units, n_latent, batch_size, L, learning_rate, genericEstimator, params, prng, sigmaInit), data
+            return VAEB(x_train, continuous, n_hidden_units, n_latent, batch_size, L, learning_rate,
+                        genericEstimator, False, params, prng, sigmaInit), data
             
 
     def encoder(self, x):
@@ -316,6 +345,27 @@ class VAEB(object):
 
         return SGVB
 
+    #returns elbo for variational inference over parameters
+    def getFVBL(self, x, mu, log_sigma) :
+        SGVB = 0
+        for ii in range(self.L) :
+            #self.sample_variational_params()
+            # p(x|z)
+            z = reparam_trick(mu, log_sigma, self.srng)
+            # decoding
+            y = self.decoder(z)
+            logpXgivenZ = self.posterior_log_prob(x, y)
+            zConditionX = 0.5 * T.sum(1 + log_sigma - T.sqr(mu) - T.exp(log_sigma), axis=1, keepdims=True)
+            thetaPrior = 0
+            for i in range(len(self.params)) :
+                mu = self.full_variational_params[2*i]
+                sigma = self.full_variational_params[2*i+1]
+                thetaPrior  += 0.5 * T.sum(1 + T.log(T.pow(sigma, 2)) - T.pow(mu, 2) - T.pow(sigma, 2))
+            SGVB += x.shape[0] * (T.sum(logpXgivenZ) + T.sum(zConditionX)) + T.sum(thetaPrior)
+
+        SGVB /= self.L
+        return SGVB
+
     # MAIN function for feed-forwarding and getting update
     def getGradient(self, x_train):
         x = T.matrix('x')   # creating Theano variable for input
@@ -327,22 +377,33 @@ class VAEB(object):
         # SGVB = KL + p(x|z) , eq. 10 or eq.6
         if self.genericEstimator:  # LA
             SGVB = self.getLA(x, mu, log_sigma)
+        elif self.fullVariational :
+            SGVB = self.getFVBL(x, mu, log_sigma)
         else:  # LB
             SGVB = self.getLB(x, mu, log_sigma)
 
         # Apply prior to parameters here to make it inference-procedure indep.
         scale = 1.0
         train_criterion = SGVB
-        for param in self.params:
-          train_criterion += -0.5 * scale * T.sum(param ** 2)
+        if not self.fullVariational :
+            for param in self.params:
+                train_criterion += -0.5 * scale * T.sum(param ** 2)
+        else :
+            for full_variational_param in self.full_variational_params :
+                train_criterion += -0.5 * scale * T.sum(full_variational_param ** 2)
 
         # gradients
-        gradients = T.grad(train_criterion, self.params)
+        if not self.fullVariational :
+            gradients = T.grad(train_criterion, self.params)
+        else :
+            gradients = T.grad(train_criterion, self.full_variational_params)
+
 
         # update of parameters
         updates = self.getUpdates(gradients)
         #updates = self.getAdaDeltaUpdates(gradients)
 
+        
         # update function
         update = th.function(
             inputs=[index],
@@ -372,8 +433,9 @@ class VAEB(object):
         # ]
 
         # ADA-GRAD
+        paramsToUpdate = self.full_variational_params if self.fullVariational else self.params
         updates = []
-        for param, gradient, ada in zip(self.params, gradients, self.ADA):
+        for param, gradient, ada in zip(paramsToUpdate, gradients, self.ADA):
             acc = ada + T.sqr(gradient)   # squared!
 
             updates.append((param, param + self.learning_rate * gradient / (T.sqrt(acc) + eps)))  # MAP
@@ -387,7 +449,9 @@ class VAEB(object):
     def getAdaDeltaUpdates(self, gradients):
 
       updates, rho, eps = [], self.rho, self.eps
-      for x, g in zip(self.params, gradients):
+
+      paramsToUpdate = self.full_variational_params if self.fullVariational else self.params
+      for x, g in zip(paramsToUpdate, gradients):
 
         # Define the initiailisation for the algorithm parameters.
         dx_ac = shared(np.zeros(x.get_value().shape, dtype=floatX))
@@ -456,6 +520,7 @@ def save_model(model, file_name) :
     with open(file_name, 'wb') as f :
         pickle.dump(model, f)
 
+
 def train_model(args) :
     # model specification
     np.random.seed(args['seed'])
@@ -468,7 +533,9 @@ def train_model(args) :
     learning_rate = args['learning_rate']
     trace_file = args['trace_file']
     generic_estimator = args['generic_estimator']
+    full_varational = args['full_varational']
     save_file = args['save_file']
+    vb_param_file = args['vb_param_file']
 
     print("loading data")
     if continuous:
@@ -489,7 +556,13 @@ def train_model(args) :
         f.close()
 
     print("creating the model")
-    model = VAEB(x_train, continuous, hidden_unit, n_latent, batch_size, L, learning_rate, generic_estimator)
+    if full_varational :
+        model, tmp = VAEB.load(vb_param_file)
+        params = model.params
+    else :
+        params = None
+
+    model = VAEB(x_train, continuous, hidden_unit, n_latent, batch_size, L, learning_rate, generic_estimator, full_varational, params)
 
     print("learning")
     if len(trace_file) > 0 :
@@ -514,6 +587,10 @@ def train_model(args) :
         print("Epoch %s : [Lower bound: %s, time: %s]" % (epoch, LB, time.time() - start))
 
         print("          [Lower bound on validation set: %s]" % LBvalidation)
+
+        if len(trace_file) > 0 :
+            with open(trace_file, 'a') as f :
+                f.write('{0},{1},{2}\n'.format(model.N * (epoch + 1), LB, LBvalidation))
 
     if len(save_file) > 0 :
         model.save(save_file)
