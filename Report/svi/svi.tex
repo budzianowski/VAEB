@@ -1,6 +1,53 @@
 \documentclass[../report.tex]{subfiles}
 \begin{document}
+The aim of Variational Inference is to provide a deterministic approximation to an intractable posterior distribution by finding parameters $\phi$ such that $\DivKL{\Func{q_\phi}{\theta}}{\Cond{\theta}{D}}$ is minimised. This is achieved by noting that
+\begin{align}
+  \DivKL{\Func{q_\phi}{\theta}}{\Cond{\theta}{D}} =& \log \Prob{D} + \Expect{\Func{q_\phi}{\theta}}{\log \Func{q_\phi}{\theta}  - \log \Prob{\theta ,D}} \nonumber \\
+  =:& \log \Prob{X} - \Func{\mathcal{L}}{\phi; D}.
+\end{align}
+Noting that $\log \Prob{D}$ is constant w.r.t. $\phi$, we can now minimise the KL-divergence by maximising the evidence lower bound (ELBO) $\mathcal{L}$ (that this is indeed a lower bound follows from the non-negativity of the KL-divergence). Aside from some notable exceptions (eg. \cite{titsias2009variational}) this quantity is not tractably point-wise evaluable. However, if $\Func{q_\phi}{\theta}$ and $\log \Prob{\theta, D}$ are point-wise evaluable, it can be approximated using Monte Carlo as
+\begin{equation}
+  \Func{\mathcal{L}}{\phi; D} \approx \frac{1}{L} \sum_{l=1}^{L} \log \Prob{\theta_l ,D} - \log \Func{q_\phi}{\theta_l}, \quad \theta_l \sim \Func{q_\phi}{\theta}
+\end{equation}
+This stochastic approximation to the ELBO is not differentiable w.r.t. $\phi$ as the distribution from which each $\theta_l$ is sampled itself depends upon $\phi$, meaning that the gradient of the log likelihood cannot be exploited to perform inference. One of the primary contributions of the paper being reviewed is to provide a differentiable estimator for $\mathcal{L}$ that allows gradient information to be exploited. In particular it notes that if there exists a tractable reparameterisation of the random variable $\tilde{\theta} \sim \Func{q_\phi}{\theta}$ such that
+\begin{equation}
+  \tilde{\theta} = \Func{g_\phi}{\epsilon}, \quad \epsilon \sim \Prob{\epsilon},
+\end{equation}
+then we can approximate the gradient of the ELBO as
+\begin{equation}
+  \Func{\mathcal{L}}{\phi; D} = \Expect{\Prob{\epsilon}}{\log \Prob{\theta ,X} - \Func{q_\phi}{\theta}} \approx \frac{1}{L} \sum_{l=1}^{L} \log \Prob{\theta_l ,X} - \log \Func{q_\phi}{\theta_l} =: \Func{\tilde{\mathcal{L}}^1}{\phi; X},
+\end{equation}
+where $\theta_l = \Func{g_\phi}{\epsilon_l}$ and $\epsilon_l \sim \Prob{\epsilon}$. Thus the dependence of the sampled parameters $\theta$ on $\phi$ has been removed, yielding a differentiable estimator provided that both $q_\phi$ and $\log \Prob{\theta ,D}$ are themselves differentiable. Approxiate inference can now be performed by computing the gradient of $\tilde{\mathcal{L}}^1$ w.r.t. $\phi$ either by hand or using one's favourite reverse-mode automatic differentiation package (eg. Autograd \cite{maclaurinautograd}) and performing gradient-based stochastic optimisation to maximise the elbo using, for example, AdaGrad \cite{duchi2011adaptive}.
 
+The authors also point out that one can re-express the elbo in the following manner
+\begin{equation}
+  \Func{\mathcal{L}}{\phi; D} = \Expect{\Func{q_\phi}{\theta}}{\log \Cond{D}{\theta}} - \DivKL{\Func{q_\phi}{\theta}}{\Prob{\theta}}.
+\end{equation}
+This is useful as the KL-divergence between the variational approximation $\Func{q_\phi}{\theta}$ and the prior over the parameters $\theta$ has a tractable closed-form expression in a number of useful cases. This leads to a second estimator for the elbo:
+\begin{equation}
+  \Func{\tilde{\mathcal{L}}^2}{\phi; D} := \frac{1}{L} \sum_{l=1}^{L} \log \Cond{D}{\theta_l} - \DivKL{\Func{q_\phi}{\theta}}{\Prob{\theta}}.
+\end{equation}
+It seems probable that this estimator will in general have lower variance than $\tilde{\mathcal{L}}^1$.
 
+So far Stochastic Variational Inference has been discussed only in a general parametric setting. The paper's other primary contribution is to use a differentiable recognition network to learn to parameterise the posterior distribution over latent variables $z_i$ local to each observation $x_i$ in a parametric model. In particular, they assume that given some global parameters $\theta$, $z_i \sim \Func{p_\theta}{z}$ and $x_i \sim \CondFunc{p_\theta}{x_i}{z_i}$. In the general case the posterior distribution over each $z_i$ will be intractable. Furthermore, the number of latent variables $z_i$ increases as the number of observations increases, meaning that under the framework discussed above we would have to optimise the variational objective with respect to each of them independently. This is potentially computationally intensive and quite wasteful as it completely disregards the any information about the posterior distribution over the $z_i$ provided by the similarities between inputs locations $x_{\neq i}$and corresponding posteriors $z_{\neq i}$. To rectify this the recognition model $\CondFunc{q_\phi}{z}{x}$ is introduced.
+
+Given the recognition model and a point estimate for $\theta$, the ELBO becomes
+\begin{align}
+  \Func{\mathcal{L}}{\theta, \phi; D} =& \,\, \Expect{\Func{q_\phi}{z_1},...,\Func{q_\phi}{z_N}}{\log \prod_{i=1}^{N} \Func{p_\theta}{x_i, z_i} - \log \prod_{i=1}^{N} \Func{q_\phi}{z_i}} \nonumber \\
+  =& \sum_{i=1}^{N} \Expect{\Func{q_\phi}{z_i}}{\log \Func{p_\theta}{x_i, z_i} - \log \Func{q_\phi}{z_i}} \nonumber \\
+\end{align}
+
+For this ELBO we can derive a similar result to $\tilde{\mathcal{L}}^1$, where we do no assume a closed-form solution for the KL divergence between distributions and include mini-batching to obtain an estimator for the ELBO for a mini-batch of observations
+\begin{equation}
+  \Func{\tilde{\mathcal{L}}^A}{\theta, \phi; D} \approx \frac{N}{LM} \sum_{i=1}^{M} \sum_{l=1}^{L} \log \Func{p_\theta}{x_i, z_{i,l}} - \log \Func{q_\phi}{z_{i,l}}, \quad z_{i,l} = \Func{g_\phi}{x_i, \epsilon_{i,l}},\,\, \epsilon_{i,l} \sim \Func{p}{\epsilon}
+\end{equation}
+where the $M$ observations in the mini-batch are drawn uniformly from the data set comprised of $N$ obnservations and for each observation we draw $L$ samples from the approximate posterior $\CondFunc{q_\phi}{z_i}{x_i}$.
+Similarly, if $\CondFunc{q_\phi}{z}{x}$ and $\Func{p_\theta}{z}$ are such that the KL-divergence between them has a tractable closed-form solution then we can use an approximate bound which we could reasonably expect to have a lower variance:
+\begin{align}
+  \Func{\mathcal{L}}{\theta, \phi; D} =& \,\,\Expect{\Func{q_\phi}{z_1},...,\Func{q_\phi}{z_N}}{\log \prod_{i=1}^{N} \CondFunc{p_\theta}{x_i}{z_i}} - \DivKL{\prod_{i=1}^{N} \CondFunc{q_\phi}{z_i}{x_i}}{\prod_{i=1}^{N} \Func{p_\theta}{z_i}} \nonumber \\
+  =& \sum_{i=1}^{N} \Expect{\Func{q_\phi}{z_i}}{\log \CondFunc{p_\theta}{x_i}{z_i}} - \DivKL{\CondFunc{q_\phi}{z_i}{x_i}}{\Func{p_\theta}{z_i}} \nonumber \\
+  \approx& \frac{N}{M} \sum_{i=1}^{M} \left[ \frac{1}{L} \sum_{l=1}^{L} \log \CondFunc{p_\theta}{x_i}{z_{i,l}} - \DivKL{\CondFunc{q_{\phi}}{z_i}{x_i}}{\Func{p_\theta}{z_i}} \right] =: \Func{\tilde{\mathcal{L}}^B}{\theta, \phi; D},
+\end{align}
+where $z_{i,l} = \Func{g_\phi}{x_i, \epsilon_{i,l}}$ and $\epsilon_{i,l} \sim \Func{p}{\epsilon}$.
 
 \end{document}

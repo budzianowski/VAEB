@@ -1,0 +1,14 @@
+\begin{thebibliography}{}
+
+\bibitem[Maclaurin et~al., ]{maclaurinautograd}
+Maclaurin, D., Duvenaud, D., and Adams, R.~P.
+\newblock Autograd: Effortless gradients in numpy.
+
+\bibitem[Titsias, 2009]{titsias2009variational}
+Titsias, M.~K. (2009).
+\newblock Variational learning of inducing variables in sparse gaussian
+  processes.
+\newblock In {\em International Conference on Artificial Intelligence and
+  Statistics}, pages 567--574.
+
+\end{thebibliography}

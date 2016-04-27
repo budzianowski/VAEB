@@ -10,6 +10,62 @@
 \newcounter{defcounter}
 \setcounter{defcounter}{0}
 
+% Basic function commands.
+\newcommand{\Func}[2]{#1 \left( #2\right)}
+\newcommand{\FuncSq}[2]{#1 \left[ #2 \right]}
+\newcommand{\CondFunc}[3]{#1 \left(#2 \, \middle\vert \, #3 \right)}
+\newcommand{\Prob}[1]{\Func{p}{#1}}
+\newcommand{\ProbC}[2]{\Func{p_{#1}}{#2}}
+\newcommand{\Cond}[2]{\CondFunc{p}{#1}{#2}}
+\newcommand{\CondC}[3]{\CondFunc{p_{#1}}{#2}{#3}}
+
+% Distributions.
+\newcommand{\dNorm}[1]{\Func{\textrm{N}}{#1}}
+\newcommand{\dDir}[1]{\Func{\textrm{Dir}}{#1}}
+\newcommand{\dNIW}[1]{\Func{\textrm{NIW}}{#1}}
+\newcommand{\dIW}[1]{\Func{\textrm{IW}}{#1}}
+\newcommand{\dGam}[1]{\Func{\textrm{G}}{#1}}
+\newcommand{\dNG}[1]{\Func{\textrm{NG}}{#1}}
+\newcommand{\dBern}[1]{\Func{\textrm{Bernoulli}}{#1}}
+\newcommand{\dCat}[1]{\Func{\textrm{Cat}}{#1}}
+\newcommand{\dInvGam}[1]{\Func{\textrm{G}^{-1}}{#1}}
+\newcommand{\dDirMulti}[1]{\Func{\textrm{DirMulti}}{#1}}
+\newcommand{\dT}[1]{\Func{\textrm{T}}{#1}}
+\newcommand{\dUnif}[1]{\textrm{Unif}{#1}}
+
+% Probability density / mass functions.
+\newcommand{\pdfNorm}[2]{\CondFunc{\textrm{N}}{#1}{#2}}
+\newcommand{\pdfDir}[2]{\CondFunc{\textrm{Dir}}{#1}{#2}}
+\newcommand{\pdfNIW}[2]{\CondFunc{\textrm{NIW}}{#1}{#2}}
+\newcommand{\pdfIW}[2]{\CondFunc{\textrm{IW}}{#1}{#2}}
+\newcommand{\pdfGam}[2]{\CondFunc{\textrm{G}}{#1}{#2}}
+\newcommand{\pdfNG}[2]{\CondFunc{\textrm{NG}}{#1}{#2}}
+\newcommand{\pdfCat}[2]{\CondFunc{\textrm{Cat}}{#1}{#2}}
+\newcommand{\pdfInvGam}[2]{\CondFunc{\textrm{G}^{-1}}{#1}{#2}}
+\newcommand{\pdfDirMulti}[2]{\CondFunc{\textrm{DirMulti}}{#1}{#2}}
+\newcommand{\pdfT}[2]{\CondFunc{\textrm{T}}{#1}{#2}}
+
+% Normalising constants.
+\newcommand{\ZDir}[1]{\Func{Z_{\textrm{Dir}}}{#1}}
+
+% Misc functions.
+\renewcommand{\det}[1]{\left| #1 \right|}
+\newcommand{\Log}[1] {\Func{\textrm{log}}{#1}}
+\newcommand{\MvGamma}[2]{\Func{\Gamma_{#1}}{#2}}
+\newcommand{\Indic}[1]{\Func{\mathbb{I}}{#1}}
+\newcommand{\Expect}[2]{\FuncSq{\mathbb{E}_{#1}}{#2}}
+\newcommand{\DivKL}[2]{\Func{\textrm{D}_{KL}}{#1 \, \mid \mid \, #2}}
+\newcommand{\GammaFunc}[1]{\Func{\Gamma}{#1}}
+
+% Miscellaneous symbols used regularly throughout.
+\newcommand{\xbar}{\overline{\mathbf{x}}}
+\newcommand{\xbarl}{\overline{x}}
+\newcommand{\Simp}[1]{\mathcal{S}^{#1}}
+
+% Independence symbol.
+\newcommand\indep{\protect\mathpalette{\protect\independenT}{\perp}}
+\def\independenT#1#2{\mathrel{\rlap{$#1#2$}\mkern2mu{#1#2}}}
+
 %%% PAGE DIMENSIONS
 \usepackage{geometry} % to change the page dimensions
 \geometry{a4paper} % or letterpaper (US) or a5paper or....
@@ -75,40 +131,41 @@ University of Cambridge}}\\
 \subfile{vae/vae.tex}
 
 
-\begin{lstlisting}[ basicstyle=\small,language = python , breaklines=true]=
+%\begin{lstlisting}[ basicstyle=\small,language = python , breaklines=true]=
 
 
-\end{lstlisting}
+%\end{lstlisting}
 
 
 
- {\small \textbf{Table 1.} The results of baseline and focus tracker on DSTC data.}
-\begin{center}
-\begin{tabular}{c | c c c} \label{tab1}
-Baseline &  Joint Goals & Requested & Method \\ \hline 
-Accuracy & 0.569 & 0.914 & 0.682\\
-L2 norm & 0.834  & 0.120& 0.576\\
-\end{tabular} 
-\end{center}
+% {\small \textbf{Table 1.} The results of baseline and focus tracker on DSTC data.}
+%\begin{center}
+%\begin{tabular}{c | c c c} \label{tab1}
+%Baseline &  Joint Goals & Requested & Method \\ \hline 
+%Accuracy & 0.569 & 0.914 & 0.682\\
+%L2 norm & 0.834  & 0.120& 0.576\\
+%\end{tabular} 
+%\end{center}
 
-\begin{figure}[!htb]
-\minipage{0.5\linewidth}%
+%\begin{figure}[!htb]
+%\minipage{0.5\linewidth}%
 % \includegraphics[width=\linewidth]{mcc1}
-\endminipage 
-\minipage{0.5\linewidth}  
+%\endminipage 
+%\minipage{0.5\linewidth}  
 %\includegraphics[width=\linewidth]{mcc2}
-\endminipage\hfill
-  \caption[1]{Evaluations results on DSTC task with different specification parameter.}
-\end{figure}
+%\endminipage\hfill
+%  \caption[1]{Evaluations results on DSTC task with different specification parameter.}
+%\end{figure}
 
 \section{Conclusion}
 \subfile{conclusion/conclusion.tex}
 
-\begin{thebibliography}{15}
-\bibitem{sutton} R.S. Sutton, A. G. Barto, \emph{Reinforcement Learning: An Introduction}, The MIT Press (March 1998), 2011.
+%\begin{thebibliography}{15}
+%\bibitem{sutton} R.S. Sutton, A. G. Barto, \emph{Reinforcement Learning: An Introduction}, The MIT Press (March 1998), 2011.
+%\end{thebibliography}
 
-
-\end{thebibliography}
+\bibliographystyle{apalike}
+\bibliography{bio}
 
 \end{document}
 
