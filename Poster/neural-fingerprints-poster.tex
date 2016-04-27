@@ -64,7 +64,7 @@
 \begin{minipage}[c][9cm][c]{0.76\textwidth}
   \begin{center}
     {\sffamily \VeryHuge \textbf{Auto-Encoding Variational Bayes}}\\[10mm]
-    {\huge\sffamily \Huge Paweł Budzianowski, ,   \\[7.5mm]
+    {\huge\sffamily \Huge Paweł Budzianowski, Thomas F. W. Nicholson,   \\[7.5mm]
     %\texttt{\{ti242, dkd23, zoubin\}@cam.ac.uk}
     }
   \end{center}
@@ -190,7 +190,21 @@ It is possible to observe what the encoder learnt during training if we choose a
 
 \vspace{0.5em}
 
-\mysection{Reconstruction}
+\mysection{Baysian: is it really all that?}
+Compare reconstruction to Auto-encoder\\
+\begin{tabular}{cc}
+\begin{minipage}[c]{0.5\columnwidth}
+\hspace{0em}
+\includegraphics[width=0.8\columnwidth]{../res/mnist_mse.pdf}
+\end{minipage} & 
+\begin{minipage}[c]{0.5\columnwidth}
+\begin{center}
+\vspace{1.0cm}
+\includegraphics[width=.9\columnwidth]{../res/recon_mnist_compre.pdf}
+\end{center}
+\end{minipage}
+\end{tabular}
+Bayesian treatment also allows us to define a posterior over input space $p(x|z)$, to score input items using $p(x)$ and quantifies uncertainty of our estimate of $z\sim q(z|x)$
 
 \newpage %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -198,6 +212,16 @@ It is possible to observe what the encoder learnt during training if we choose a
 \mysection{Full VB}
 
 Large random weights give similar behavior to circular fingeprints:
+\begin{tabular}{cc}
+\begin{minipage}[c]{0.25\columnwidth}
+\begin{itemize}
+\item Different activation functions.
+\end{itemize}
+\end{minipage} & 
+\begin{minipage}[c]{0.75\columnwidth}
+\includegraphics[width=1.0\columnwidth, clip, trim=4mm 0mm 4mm 4mm]{../res/mnist_activations}
+\end{minipage}
+\end{tabular}
 
 \vspace{0.5em}
 
@@ -239,7 +263,7 @@ We examined various changes to the original architecture of the auto-encoder to 
 \mysection{Future works}
 % enumerate doesnt seem to work here..
 I.~~ Scheduled training of VAEB $[2]$.\\
-II. ~~\\
+II. ~~ Direct parameterization of differentiable transform \\
 III. ~~\\
 \vspace{0.5em}
 
@@ -247,6 +271,7 @@ III. ~~\\
 \begin{enumerate}
 \item Kingma, D. P., and  Welling M., "Auto-encoding variational bayes." arXiv preprint arXiv:1312.6114 (2013).
 \item Geras, K. J., and Sutton C., "Scheduled denoising autoencoders." arXiv preprint arXiv:1406.3269 (2014).
+\item Tran, D, Ranganath, R. and Blei, M. "Variational Gaussian Process" arXiv preprint arXiv:1511.06499 (2015).
 \end{enumerate}
 
 \end{multicols}
