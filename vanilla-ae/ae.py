@@ -8,6 +8,10 @@ import numpy as np
 import numpy.random as rnd
 import matplotlib.pyplot as plt
 
+import sys
+sys.path.append('..')
+import VAEBImage
+
 floatX = th.config.floatX
 
 # Construct a plain old autoencoder.
@@ -112,6 +116,10 @@ def ConstructAE(Xtr, Denc=[500], Dz=20, Ddec=[500], f=T.tanh, s2=1.0, \
 def rmse(X, Xpr):
   return np.sqrt(np.mean(np.sum((X - Xpr)**2, 1)))
 
+# Compute the root-mean-square-error between X and Xpr. Rows are observations.
+def mse(X, Xpr):
+  return np.mean(np.sum((X - Xpr)**2, 1))
+
 
 # Learn an autoencoder for the Frey Face data. Ntr = no. train data, Dz = no.
 # latent dims (no. units in the squished layer between the encoder and decoder).
@@ -145,9 +153,9 @@ def LearnFreyFace(epochs=100, Dz=20, Ntr=1500):
     print('Epoch ' + str(i) + '. mse = ' + str(mse[-1]))
 
   # Save the learning curve.
-  plt.plot(mse)
-  plt.savefig('frey-loglik.pdf')
-  plt.close()
+  #plt.plot(mse)
+  #plt.savefig('frey-loglik.pdf')
+  #plt.close()
 
   # Compute reconstruction error. I'm using rmse.
   Xtrpr, Xtepr = reconstruct(Xtr.get_value()), reconstruct(Xte.get_value())
@@ -155,7 +163,7 @@ def LearnFreyFace(epochs=100, Dz=20, Ntr=1500):
   print('training rmse = ' + str(rmsetr))
   print('testing rmse = ' + str(rmsete))
 
-  return reconstruct, encode, decode
+  return reconstruct, encode, decode, Xtr, Xte
 
 
 # Learn an autoencoder for the mnist data. Ntr = no. training data, Dz = no.
@@ -190,9 +198,9 @@ def LearnMNIST(epochs=25, Dz=20, Ntr=50000):
     print('Epoch ' + str(i) + '. mse = ' + str(mse[-1]))
 
   # Save the learning curve.
-  plt.plot(mse)
-  plt.savefig('mnist-mse.pdf')
-  plt.close()
+  #plt.plot(mse)
+  #plt.savefig('mnist-mse.pdf')
+  #plt.close()
 
   # Compute reconstruction error. I'm using rmse.
   Xtrpr, Xtepr = reconstruct(Xtr.get_value()), reconstruct(Xte.get_value())
@@ -200,7 +208,7 @@ def LearnMNIST(epochs=25, Dz=20, Ntr=50000):
   print('training rmse = ' + str(rmsetr))
   print('testing rmse = ' + str(rmsete))
 
-  return reconstruct, encode, decode
+  return reconstruct, encode, decode, Xtr, Xte
 
 
 # Learns an autoencoder with Dz=20 dimensions for both Frey Faces and mnist.
@@ -210,27 +218,37 @@ def main():
   # Seed with a large-ish prime.
   rnd.seed(15485863)
 
+  with open('../reconstruction_res/AE_MSE.res', 'w') as f :
+    f.write('data_type,latent_size,MSE\n')
+
+
   # Appears to still be improving after 200 iterations.
-  Dz = 2
-  reconstruct, encode, decode = LearnFreyFace(epochs=1000, Dz=Dz, Ntr=1500)
+  for Dz in [2, 10, 20] :
+    epochs = 550 if Dz > 2 else 100
+    reconstruct, encode, decode, Xtrain, XTest = LearnFreyFace(epochs=epochs, Dz=Dz, Ntr=1500)
 
-  # Spit out some faces. (Close the window to iterate.)
-  for t in range(10):
-    Z = rnd.normal(0.0, 1.0, size=(1, Dz)).astype(floatX)
-    plt.imshow(np.reshape(decode(Z), (28, 20)), cmap='gray')
-    plt.colorbar()
-    plt.show()
+    # Spit out some faces. (Close the window to iterate.)
+    for t in range(8):
+      reconstructed = reconstruct(XTest.get_value()[t:t+1])
+      VAEBImage.save_image(XTest.get_value()[t:t+1], '../reconstruction_res/AE_continuous_{0}_orig_{1}.jpg'.format(Dz, t))
+      VAEBImage.save_image(reconstructed, '../reconstruction_res/AE_continuous_{0}_recon_{1}.jpg'.format(Dz, t))
 
-  # Generally requires fewer epochs owing to being a smaller data set.
-  Dz = 5
-  reconstruct, encode, decode = LearnMNIST(epochs=100, Dz=Dz, Ntr=50000)
+    mseVal = mse(XTest.get_value(), reconstruct(XTest.get_value()))
+    with open('../reconstruction_res/AE_MSE.res', 'a') as f :
+      f.write('{0},{1},{2}\n'.format('continuous',Dz,mseVal))
 
-  # Spit out some numbers.
-  for t in range(10):
-    Z = rnd.normal(0.0, 1.0, size=(1, Dz)).astype(floatX)
-    plt.imshow(np.reshape(decode(Z), (28, 28)), cmap='gray')
-    plt.colorbar()
-    plt.show()
+    # Generally requires fewer epochs owing to being a smaller data set.
+    reconstruct, encode, decode, XTrain, XTest = LearnMNIST(epochs=1000, Dz=Dz, Ntr=50000)
+
+    # Spit out some faces. (Close the window to iterate.)
+    for t in range(8):
+      reconstructed = reconstruct(XTest.get_value()[t:t+1])
+      VAEBImage.save_image(XTest.get_value()[t:t+1], '../reconstruction_res/AE_discrete_{0}_orig_{1}.jpg'.format(Dz, t))
+      VAEBImage.save_image(reconstructed, '../reconstruction_res/AE_discrete_{0}_recon_{1}.jpg'.format(Dz, t))
+
+    mseVal = mse(XTest.get_value(), reconstruct(XTest.get_value()))
+    with open('../reconstruction_res/AE_MSE.res', 'a') as f :
+      f.write('{0},{1},{2}\n'.format('discrete',Dz,mseVal))
 
 if __name__ == '__main__':
   main()
