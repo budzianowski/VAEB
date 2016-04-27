@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2015.3.1)  27 APR 2016 20:50
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2015.3.1)  27 APR 2016 20:54
 entering extended mode
 **C:/Users/Will/Dropbox/University/MPhil*-*Cambridge/MLSALT4*-*Advanced*Machine
 *Learning/VAEB/Report/report.tex
@@ -1002,14 +1002,16 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 ("C:\Users\Will\Dropbox\University\MPhil - Cambridge\MLSALT4 - Advanced Machine
  Learning\VAEB\Report\fvb/fvb.tex" [3])
 ("C:\Users\Will\Dropbox\University\MPhil - Cambridge\MLSALT4 - Advanced Machine
+ Learning\VAEB\Report\extensions/extensions.tex")
+("C:\Users\Will\Dropbox\University\MPhil - Cambridge\MLSALT4 - Advanced Machine
  Learning\VAEB\Report\conclusion/conclusion.tex")
 ("C:\Users\Will\Dropbox\University\MPhil - Cambridge\MLSALT4 - Advanced Machine
  Learning\VAEB\Report\report.bbl") [4]
 ("C:\Users\Will\Dropbox\University\MPhil - Cambridge\MLSALT4 - Advanced Machine
  Learning\VAEB\Report\report.aux") ) 
 Here is how much of TeX's memory you used:
- 16751 strings out of 493921
- 322147 string characters out of 3144880
+ 16756 strings out of 493921
+ 322526 string characters out of 3144880
  365491 words of memory out of 3000000
  19663 multiletter control sequences out of 15000+200000
  56489 words of font info for 44 fonts, out of 3000000 for 9000
@@ -1035,7 +1037,7 @@ ram Files (x86)/MiKTeX 2.9/fonts/type1/public/lm/lmr7.pfb><C:/Program Files (x8
 .9/fonts/type1/public/lm/lmsy10.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/ty
 pe1/public/lm/lmsy7.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/a
 msfonts/symbols/msbm10.pfb>
-Output written on report.pdf (4 pages, 286126 bytes).
+Output written on report.pdf (4 pages, 286657 bytes).
 PDF statistics:
  95 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
