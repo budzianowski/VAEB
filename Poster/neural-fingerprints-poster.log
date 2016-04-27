@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2015.4.28)  27 APR 2016 00:31
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2015.10.17)  27 APR 2016 03:42
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1324,74 +1324,105 @@ File: ../freyFaces/FREY.jpg Graphic file (type jpg)
 Package pdftex.def Info: ../freyFaces/FREY.jpg used on input line 186.
 (pdftex.def)             Requested size: 243.91824pt x 341.50818pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 193--193
- [][][][]\OT1/cmss/bx/n/51.6 Reconstruction 
+<../res/mnist_mse.pdf, id=19, 597.23125pt x 845.1575pt>
+File: ../res/mnist_mse.pdf Graphic file (type pdf)
+
+<use ../res/mnist_mse.pdf>
+Package pdftex.def Info: ../res/mnist_mse.pdf used on input line 198.
+(pdftex.def)             Requested size: 406.53558pt x 575.30562pt.
+
+<../res/recon_mnist_compre.pdf, id=20, 170.6375pt x 170.6375pt>
+File: ../res/recon_mnist_compre.pdf Graphic file (type pdf)
+
+<use ../res/recon_mnist_compre.pdf>
+Package pdftex.def Info: ../res/recon_mnist_compre.pdf used on input line 203.
+(pdftex.def)             Requested size: 457.34767pt x 457.379pt.
+
+Overfull \hbox (24.0pt too wide) in paragraph at lines 194--208
+[]
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 198--198
+Underfull \hbox (badness 10000) in paragraph at lines 212--212
  [][][][]\OT1/cmss/bx/n/51.6 Full VB 
  []
 
-<../res/mnist_activations.png, id=19, 1806.75pt x 397.485pt>
+<../res/mnist_activations.png, id=21, 1806.75pt x 397.485pt>
 File: ../res/mnist_activations.png Graphic file (type png)
 
 <use ../res/mnist_activations.png>
-Package pdftex.def Info: ../res/mnist_activations.png used on input line 220.
+Package pdftex.def Info: ../res/mnist_activations.png used on input line 222.
 (pdftex.def)             Requested size: 762.25131pt x 164.97276pt.
 
-Overfull \hbox (24.0pt too wide) in paragraph at lines 213--223
+Overfull \hbox (24.0pt too wide) in paragraph at lines 214--225
+[] 
+ []
+
+File: ../res/mnist_activations.png Graphic file (type png)
+<use ../res/mnist_activations.png>
+Package pdftex.def Info: ../res/mnist_activations.png used on input line 244.
+(pdftex.def)             Requested size: 762.25131pt x 164.97276pt.
+
+Overfull \hbox (24.0pt too wide) in paragraph at lines 237--247
 [][] 
  []
 
-<../res/mnist_depth.png, id=21, 1806.75pt x 397.485pt>
+<../res/mnist_depth.png, id=24, 1806.75pt x 397.485pt>
 File: ../res/mnist_depth.png Graphic file (type png)
 
 <use ../res/mnist_depth.png>
-Package pdftex.def Info: ../res/mnist_depth.png used on input line 233.
+Package pdftex.def Info: ../res/mnist_depth.png used on input line 257.
 (pdftex.def)             Requested size: 762.25131pt x 164.97276pt.
 
-Overfull \hbox (24.0pt too wide) in paragraph at lines 226--236
+Overfull \hbox (24.0pt too wide) in paragraph at lines 250--260
 [][] 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 239--239
+Underfull \hbox (badness 10000) in paragraph at lines 263--263
  [][][][]\OT1/cmss/bx/n/51.6 Future works 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 246--246
+Underfull \hbox (badness 10000) in paragraph at lines 270--270
  [][][][]\OT1/cmss/bx/n/51.6 References 
  []
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 255.
 [1
 
 
 Non-PDF special ignored!
-Non-PDF special ignored!{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map} <./
-badges/camtext.pdf> <./figures/how-fingerprints.png> <./figures/fig_1.pdf> <../
-res/mnist_activations.png> <../res/mnist_depth.png> <./badges/cambridgecrest.pd
-f> <../res/mnist_LAvsLB.png> <../freyFaces/MNIST.jpg> <../freyFaces/FREY.jpg>]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 255.
+Non-PDF special ignored!]
+Overfull \vbox (236.36124pt too high) has occurred while \output is active []
 
-(./neural-fingerprints-poster.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 255.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 255.
+
+[2{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map} <./badges/camtext.pdf> <.
+/figures/how-fingerprints.png> <./figures/fig_1.pdf> <../res/mnist_activations.
+png> <../res/mnist_depth.png> <./badges/cambridgecrest.pdf> <../res/mnist_LAvsL
+B.png> <../freyFaces/MNIST.jpg> <../freyFaces/FREY.jpg> <../res/mnist_mse.pdf> 
+<../res/recon_mnist_compre.pdf
+
+pdfTeX warning: pdflatex (file ../res/recon_mnist_compre.pdf): PDF inclusion: m
+ultiple pdfs with page group included in a single page
+>]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 280.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 280.
+ (./neural-fingerprints-poster.aux)
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 280.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 280.
 Package rerunfilecheck Info: File `neural-fingerprints-poster.out' has not chan
 ged.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 255.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 280.
  ) 
 Here is how much of TeX's memory you used:
- 17233 strings out of 493304
- 304516 string characters out of 6139871
- 417152 words of memory out of 5000000
- 20286 multiletter control sequences out of 15000+600000
+ 17245 strings out of 493304
+ 304797 string characters out of 6139870
+ 426153 words of memory out of 5000000
+ 20294 multiletter control sequences out of 15000+600000
  18724 words of font info for 68 fonts, out of 8000000 for 9000
  957 hyphenation exceptions out of 8191
- 56i,16n,55p,494b,863s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 56i,16n,55p,494b,1560s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texmf/fonts/enc/dvips/cm-super/cm-super-ts1.enc}</usr/share/texli
 ve/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/share/texlive/tex
 mf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/texmf-dis
@@ -1401,10 +1432,10 @@ e1/public/amsfonts/cm/cmr17.pfb></usr/share/texlive/texmf-dist/fonts/type1/publ
 ic/amsfonts/cm/cmss17.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/ams
 fonts/cm/cmssbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfont
 s/cm/cmsy10.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfss3583.pfb>
-Output written on neural-fingerprints-poster.pdf (1 page, 1221922 bytes).
+Output written on neural-fingerprints-poster.pdf (2 pages, 1256860 bytes).
 PDF statistics:
- 227 PDF objects out of 1000 (max. 8388607)
- 127 compressed objects within 2 object streams
- 4 named destinations out of 1000 (max. 500000)
- 94 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 262 PDF objects out of 1000 (max. 8388607)
+ 142 compressed objects within 2 object streams
+ 6 named destinations out of 1000 (max. 500000)
+ 110 words of extra memory for PDF output out of 10000 (max. 10000000)
 
