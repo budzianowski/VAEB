@@ -1,0 +1,13 @@
+data_type,latent_size,sample_type,MSE
+discrete,2,mean,33.0772819519
+discrete,2,sample,33.1306838989
+discrete,10,mean,12.7276439667
+discrete,10,sample,13.1026382446
+discrete,20,mean,8.26831054688
+discrete,20,sample,8.95605182648
+continuous,2,mean,6.84845234758
+continuous,2,sample,6.8709725133
+continuous,10,mean,3.97013417255
+continuous,10,sample,3.95117175841
+continuous,20,mean,3.73249050824
+continuous,20,sample,3.7270979107
