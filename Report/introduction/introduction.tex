@@ -1,6 +1,24 @@
 \documentclass[../report.tex]{subfiles}
 \begin{document}
-This paper concerns itself with the scenario in which we wish to find a point-estimate to the parameters $\theta$ of some parametric model in which we generate each observations $\mathbf{x}_i$ by first sampling a ``local'' latent variable $\mathbf{z}_i \sim \PTheta{\mathbf{z}}$ and then sampling the associated observation $\mathbf{x}_i \sim \CondPTheta{\mathbf{x}}{\mathbf{z}}$
+This paper concerns itself with the scenario in which we wish to find a point-estimate to the parameters $\theta$ of some parametric model in which we generate each observations $\mathbf{x}_i$ by first sampling a ``local'' latent variable $\mathbf{z}_i \sim \PTheta{\mathbf{z}}$ and then sampling the associated observation $\mathbf{x}_i \sim \CondPTheta{\mathbf{x}}{\mathbf{z}}$. The conditional independence assumptions in this model are visualised in the graphical model in figure \ref{fig:graph}.
+
+\begin{center}
+\begin{tikzpicture}
+\tikzstyle{main}=[circle, minimum size = 30mm, thick, draw =black!80, node distance = 48mm]
+\tikzstyle{connect}=[-latex, thick]
+\tikzstyle{box}=[rectangle, draw=black!100]
+  \node[main, fill = white!100] (theta) {$\theta$};
+  \node[main, fill = white!100, right=of theta] (C1) {$\mathbf{z}_i$};
+  \node[main, fill = black!10, right=of C1] (X1) {$\mathbf{x}_i$};
+  \path (theta) edge [connect] (C1)
+        (C1) edge [connect] (X1);
+  \node[rectangle, inner sep=0mm, fit= (C1) (X1),label=below right:$N$, yshift=0mm, xshift=32mm] {};
+  \node[rectangle, inner sep=10mm,draw=black!100, fit= (C1) (X1), yshift=-5mm] {};
+  \path
+    ([shift={(50\pgflinewidth,-50\pgflinewidth)}]current bounding box.south west)
+    ([shift={( 50\pgflinewidth, -150\pgflinewidth)}]current bounding box.north east);
+\end{tikzpicture}
+\end{center}
 
 Autoencoding Variational Bayes makes two contributions in terms of methodology, introducing a differentiable stochastic estimator for the variational lower bound to the model evidence, using this to learn a recognition model to provide a fast method to compute an approximate posterior distribution over ``local'' latent variables given observations.
 
