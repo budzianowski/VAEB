@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2015.10.17)  27 APR 2016 04:10
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2015.4.28)  27 APR 2016 09:21
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1303,35 +1303,35 @@ Underfull \hbox (badness 10000) in paragraph at lines 152--152
  [][][][]\OT1/cmss/bx/n/51.6 AEVB 
  []
 
-<../res/mnist_LAvsLB.png, id=15, 1806.75pt x 397.485pt>
-File: ../res/mnist_LAvsLB.png Graphic file (type png)
+<../res/mnist_LAvsLB.pdf, id=15, 1806.75pt x 397.485pt>
+File: ../res/mnist_LAvsLB.pdf Graphic file (type pdf)
 
-<use ../res/mnist_LAvsLB.png>
-Package pdftex.def Info: ../res/mnist_LAvsLB.png used on input line 167.
+<use ../res/mnist_LAvsLB.pdf>
+Package pdftex.def Info: ../res/mnist_LAvsLB.pdf used on input line 167.
 (pdftex.def)             Requested size: 1016.33508pt x 223.5969pt.
 
-<../freyFaces/MNIST.jpg, id=17, 281.05pt x 281.05pt>
+<../freyFaces/MNIST.jpg, id=16, 281.05pt x 281.05pt>
 File: ../freyFaces/MNIST.jpg Graphic file (type jpg)
 
 <use ../freyFaces/MNIST.jpg>
 Package pdftex.def Info: ../freyFaces/MNIST.jpg used on input line 181.
 (pdftex.def)             Requested size: 292.70486pt x 292.72252pt.
 
-<../freyFaces/FREY.jpg, id=18, 200.75pt x 281.05pt>
+<../freyFaces/FREY.jpg, id=17, 200.75pt x 281.05pt>
 File: ../freyFaces/FREY.jpg Graphic file (type jpg)
 
 <use ../freyFaces/FREY.jpg>
 Package pdftex.def Info: ../freyFaces/FREY.jpg used on input line 186.
 (pdftex.def)             Requested size: 243.91824pt x 341.50818pt.
 
-<../res/mnist_mse.pdf, id=19, 597.23125pt x 845.1575pt>
+<../res/mnist_mse.pdf, id=18, 597.23125pt x 845.1575pt>
 File: ../res/mnist_mse.pdf Graphic file (type pdf)
 
 <use ../res/mnist_mse.pdf>
 Package pdftex.def Info: ../res/mnist_mse.pdf used on input line 198.
 (pdftex.def)             Requested size: 406.53558pt x 575.30562pt.
 
-<../res/recon_mnist_compre.pdf, id=20, 170.6375pt x 170.6375pt>
+<../res/recon_mnist_compre.pdf, id=19, 170.6375pt x 170.6375pt>
 File: ../res/recon_mnist_compre.pdf Graphic file (type pdf)
 
 <use ../res/recon_mnist_compre.pdf>
@@ -1347,31 +1347,31 @@ Underfull \hbox (badness 10000) in paragraph at lines 212--212
  [][][][]\OT1/cmss/bx/n/51.6 Full VB 
  []
 
-<../res/mnist_activations.png, id=21, 1806.75pt x 397.485pt>
-File: ../res/mnist_activations.png Graphic file (type png)
+<../res/mnist_activations.pdf, id=20, 1806.75pt x 397.485pt>
+File: ../res/mnist_activations.pdf Graphic file (type pdf)
 
-<use ../res/mnist_activations.png>
-Package pdftex.def Info: ../res/mnist_activations.png used on input line 226.
+<use ../res/mnist_activations.pdf>
+Package pdftex.def Info: ../res/mnist_activations.pdf used on input line 226.
 (pdftex.def)             Requested size: 762.25131pt x 164.97276pt.
 
 Overfull \hbox (24.0pt too wide) in paragraph at lines 218--229
 [] 
  []
 
-File: ../res/mnist_activations.png Graphic file (type png)
-<use ../res/mnist_activations.png>
-Package pdftex.def Info: ../res/mnist_activations.png used on input line 248.
+File: ../res/mnist_activations.pdf Graphic file (type pdf)
+<use ../res/mnist_activations.pdf>
+Package pdftex.def Info: ../res/mnist_activations.pdf used on input line 248.
 (pdftex.def)             Requested size: 762.25131pt x 164.97276pt.
 
 Overfull \hbox (24.0pt too wide) in paragraph at lines 241--251
 [][] 
  []
 
-<../res/mnist_depth.png, id=24, 1806.75pt x 397.485pt>
-File: ../res/mnist_depth.png Graphic file (type png)
+<../res/mnist_depth.pdf, id=23, 1806.75pt x 397.485pt>
+File: ../res/mnist_depth.pdf Graphic file (type pdf)
 
-<use ../res/mnist_depth.png>
-Package pdftex.def Info: ../res/mnist_depth.png used on input line 261.
+<use ../res/mnist_depth.pdf>
+Package pdftex.def Info: ../res/mnist_depth.pdf used on input line 261.
 (pdftex.def)             Requested size: 762.25131pt x 164.97276pt.
 
 Overfull \hbox (24.0pt too wide) in paragraph at lines 254--264
@@ -1398,9 +1398,16 @@ Overfull \vbox (236.36124pt too high) has occurred while \output is active []
 
 [2{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map} <./badges/camtext.pdf> <.
 /figures/how-fingerprints.png> <./figures/fig_1.pdf> <../res/mnist_activations.
-png> <../res/mnist_depth.png> <./badges/cambridgecrest.pdf> <../res/mnist_LAvsL
-B.png> <../freyFaces/MNIST.jpg> <../freyFaces/FREY.jpg> <../res/mnist_mse.pdf> 
-<../res/recon_mnist_compre.pdf
+pdf> <../res/mnist_depth.pdf> <./badges/cambridgecrest.pdf
+
+pdfTeX warning: pdflatex (file ./badges/cambridgecrest.pdf): PDF inclusion: mul
+tiple pdfs with page group included in a single page
+> <../res/mnist_LAvsLB.pdf
+
+pdfTeX warning: pdflatex (file ../res/mnist_LAvsLB.pdf): PDF inclusion: multipl
+e pdfs with page group included in a single page
+> <../freyFaces/MNIST.jpg> <../freyFaces/FREY.jpg> <../res/mnist_mse.pdf> <../r
+es/recon_mnist_compre.pdf
 
 pdfTeX warning: pdflatex (file ../res/recon_mnist_compre.pdf): PDF inclusion: m
 ultiple pdfs with page group included in a single page
@@ -1417,8 +1424,8 @@ Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 284.
  ) 
 Here is how much of TeX's memory you used:
  17245 strings out of 493304
- 304797 string characters out of 6139870
- 423153 words of memory out of 5000000
+ 304797 string characters out of 6139871
+ 423154 words of memory out of 5000000
  20294 multiletter control sequences out of 15000+600000
  18724 words of font info for 68 fonts, out of 8000000 for 9000
  957 hyphenation exceptions out of 8191
@@ -1432,10 +1439,10 @@ e1/public/amsfonts/cm/cmr17.pfb></usr/share/texlive/texmf-dist/fonts/type1/publ
 ic/amsfonts/cm/cmss17.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/ams
 fonts/cm/cmssbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfont
 s/cm/cmsy10.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfss3583.pfb>
-Output written on neural-fingerprints-poster.pdf (2 pages, 1259221 bytes).
+Output written on neural-fingerprints-poster.pdf (2 pages, 1555684 bytes).
 PDF statistics:
- 262 PDF objects out of 1000 (max. 8388607)
- 142 compressed objects within 2 object streams
+ 419 PDF objects out of 1000 (max. 8388607)
+ 177 compressed objects within 2 object streams
  6 named destinations out of 1000 (max. 500000)
  110 words of extra memory for PDF output out of 10000 (max. 10000000)
 
