@@ -46,7 +46,7 @@ Similarly, if $\CondFunc{q_\phi}{z}{x}$ and $\Func{p_\theta}{z}$ are such that t
 \begin{align}
   \Func{\mathcal{L}}{\theta, \phi; D} =& \,\,\Expect{\Func{q_\phi}{z_1},...,\Func{q_\phi}{z_N}}{\log \prod_{i=1}^{N} \CondFunc{p_\theta}{x_i}{z_i}} - \DivKL{\prod_{i=1}^{N} \CondFunc{q_\phi}{z_i}{x_i}}{\prod_{i=1}^{N} \Func{p_\theta}{z_i}} \nonumber \\
   =& \sum_{i=1}^{N} \Expect{\Func{q_\phi}{z_i}}{\log \CondFunc{p_\theta}{x_i}{z_i}} - \DivKL{\CondFunc{q_\phi}{z_i}{x_i}}{\Func{p_\theta}{z_i}} \nonumber \\
-  \approx& \frac{N}{M} \sum_{i=1}^{M} \left[ \frac{1}{L} \sum_{l=1}^{L} \log \CondFunc{p_\theta}{x_i}{z_{i,l}} - \DivKL{\CondFunc{q_{\phi}}{z_i}{x_i}}{\Func{p_\theta}{z_i}} \right] =: \Func{\tilde{\mathcal{L}}^B}{\theta, \phi; D},
+  \approx& \frac{N}{M} \sum_{i=1}^{M} \left[ \frac{1}{L} \sum_{l=1}^{L} \log \CondFunc{p_\theta}{x_i}{z_{i,l}} - \DivKL{\CondFunc{q_{\phi}}{z_i}{x_i}}{\Func{p_\theta}{z_i}} \right] =: \Func{\tilde{\mathcal{L}}^B}{\theta, \phi; D}, \label{eqn:Lb}
 \end{align}
 where $z_{i,l} = \Func{g_\phi}{x_i, \epsilon_{i,l}}$ and $\epsilon_{i,l} \sim \Func{p}{\epsilon}$.
 
