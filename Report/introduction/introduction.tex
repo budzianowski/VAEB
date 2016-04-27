@@ -1,6 +1,8 @@
 \documentclass[../report.tex]{subfiles}
 \begin{document}
+This paper concerns itself with the scenario in which we wish to find a point-estimate to the parameters $\theta$ of some parametric model in which we generate each observations $\mathbf{x}_i$ by first sampling a ``local'' latent variable $\mathbf{z}_i \sim \PTheta{\mathbf{z}}$ and then sampling the associated observation $\mathbf{x}_i \sim \CondPTheta{\mathbf{x}}{\mathbf{z}}$
 
+Autoencoding Variational Bayes makes two contributions in terms of methodology, introducing a differentiable stochastic estimator for the variational lower bound to the model evidence, using this to learn a recognition model to provide a fast method to compute an approximate posterior distribution over ``local'' latent variables given observations.
 
 
 \end{document}
