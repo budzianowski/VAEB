@@ -1,6 +1,5 @@
-\documentclass[../report.tex]{subfiles}
+\documentclass[../report/report.tex]{subfiles}
 \begin{document}
-
-
+The analysed paper provided a great introduction into the new method of performing variational inference. We managed to obtain the same results as the authors on both data sets which was partially possible thanks to straightforward explanation of the proposed method by the authors. We found out that the presented structure was very robust to changes of parameters of the network. Moreover, our experiments shows that VAEB performs superior to the vanilla AE architecture and it resistance to superfluous latent variables thanks to automatic regularisation via KL-term. Our implementation of variational inference on both the parameters $\theta$ and the latent variables $\mathbf{z}$ performed disappointingly poorly which might be partially explained by overly-restrictive prior and we plan to further investigate this problem. The code needed to replicate our results is available at \url{https://github.com/budzianowski/VAEB}. We found out this project incredibly interesting and we hope to work further on extension presented in the previous section.
 
 \end{document}
