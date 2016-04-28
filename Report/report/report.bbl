@@ -1,0 +1,169 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 2.3 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \sortlist{entry}{nty}
+    \entry{blundell2015weight}{article}{}
+      \name{labelname}{4}{}{%
+        {{hash=24fe1af011227491e54e299ba4cb24b5}{Blundell}{B\bibinitperiod}{Charles}{C\bibinitperiod}{}{}{}{}}%
+        {{hash=d0a8c30b8e99bf21bb325b58a360af83}{Cornebise}{C\bibinitperiod}{Julien}{J\bibinitperiod}{}{}{}{}}%
+        {{hash=481308b301166b521c74fde6566e97e6}{Kavukcuoglu}{K\bibinitperiod}{Koray}{K\bibinitperiod}{}{}{}{}}%
+        {{hash=d7805381550fb5f8360345f7f72c0b49}{Wierstra}{W\bibinitperiod}{Daan}{D\bibinitperiod}{}{}{}{}}%
+      }
+      \name{author}{4}{}{%
+        {{hash=24fe1af011227491e54e299ba4cb24b5}{Blundell}{B\bibinitperiod}{Charles}{C\bibinitperiod}{}{}{}{}}%
+        {{hash=d0a8c30b8e99bf21bb325b58a360af83}{Cornebise}{C\bibinitperiod}{Julien}{J\bibinitperiod}{}{}{}{}}%
+        {{hash=481308b301166b521c74fde6566e97e6}{Kavukcuoglu}{K\bibinitperiod}{Koray}{K\bibinitperiod}{}{}{}{}}%
+        {{hash=d7805381550fb5f8360345f7f72c0b49}{Wierstra}{W\bibinitperiod}{Daan}{D\bibinitperiod}{}{}{}{}}%
+      }
+      \strng{namehash}{9a6dcadb440af6589b9a289585cffa4d}
+      \strng{fullhash}{b6119d9b00bedfaaa2ec5722dbda1b3e}
+      \field{sortinit}{B}
+      \field{labeltitle}{Weight uncertainty in neural networks}
+      \field{journaltitle}{arXiv preprint arXiv:1505.05424}
+      \field{title}{Weight uncertainty in neural networks}
+      \field{year}{2015}
+    \endentry
+    \entry{duchi2011adaptive}{article}{}
+      \name{labelname}{3}{}{%
+        {{hash=b8fbef1897da5bf46822ced31bc865c6}{Duchi}{D\bibinitperiod}{John}{J\bibinitperiod}{}{}{}{}}%
+        {{hash=0b3d32703edd2b7248e8e8f33c5893db}{Hazan}{H\bibinitperiod}{Elad}{E\bibinitperiod}{}{}{}{}}%
+        {{hash=300d4990e626d975e0c28630444f63c3}{Singer}{S\bibinitperiod}{Yoram}{Y\bibinitperiod}{}{}{}{}}%
+      }
+      \name{author}{3}{}{%
+        {{hash=b8fbef1897da5bf46822ced31bc865c6}{Duchi}{D\bibinitperiod}{John}{J\bibinitperiod}{}{}{}{}}%
+        {{hash=0b3d32703edd2b7248e8e8f33c5893db}{Hazan}{H\bibinitperiod}{Elad}{E\bibinitperiod}{}{}{}{}}%
+        {{hash=300d4990e626d975e0c28630444f63c3}{Singer}{S\bibinitperiod}{Yoram}{Y\bibinitperiod}{}{}{}{}}%
+      }
+      \list{publisher}{1}{%
+        {JMLR. org}%
+      }
+      \strng{namehash}{21039f1d6e97f13dbd40c187a8131cf0}
+      \strng{fullhash}{21039f1d6e97f13dbd40c187a8131cf0}
+      \field{sortinit}{D}
+      \field{labeltitle}{Adaptive subgradient methods for online learning and stochastic optimization}
+      \field{journaltitle}{The Journal of Machine Learning Research}
+      \field{title}{Adaptive subgradient methods for online learning and stochastic optimization}
+      \field{volume}{12}
+      \field{year}{2011}
+      \field{pages}{2121\bibrangedash 2159}
+    \endentry
+    \entry{sutton}{article}{}
+      \name{labelname}{2}{}{%
+        {{hash=70b918b3c4d66d9c20e560d5ba4b533b}{Geras}{G\bibinitperiod}{Krzysztof\bibnamedelima J.}{K\bibinitperiod\bibinitdelim J\bibinitperiod}{}{}{}{}}%
+        {{hash=fd59f6a0549332a54ac82d8840ea6ff1}{Sutton}{S\bibinitperiod}{Charles}{C\bibinitperiod}{}{}{}{}}%
+      }
+      \name{author}{2}{}{%
+        {{hash=70b918b3c4d66d9c20e560d5ba4b533b}{Geras}{G\bibinitperiod}{Krzysztof\bibnamedelima J.}{K\bibinitperiod\bibinitdelim J\bibinitperiod}{}{}{}{}}%
+        {{hash=fd59f6a0549332a54ac82d8840ea6ff1}{Sutton}{S\bibinitperiod}{Charles}{C\bibinitperiod}{}{}{}{}}%
+      }
+      \strng{namehash}{bcd4fdf331b2cccd634e6cdd994cfdba}
+      \strng{fullhash}{bcd4fdf331b2cccd634e6cdd994cfdba}
+      \field{sortinit}{G}
+      \field{labeltitle}{Scheduled denoising autoencoders}
+      \field{journaltitle}{arXiv preprint arXiv:1406.3269}
+      \field{title}{Scheduled denoising autoencoders}
+      \field{year}{2014}
+    \endentry
+    \entry{bengioDVAE}{article}{}
+      \name{labelname}{1}{}{%
+        {{hash=34d0b1d2d06352d60e8370defd148715}{Im}{I\bibinitperiod}{et\bibnamedelima al.}{e\bibinitperiod\bibinitdelim a\bibinitperiod}{}{}{Daniel\bibnamedelima Jiwoong}{D\bibinitperiod\bibinitdelim J\bibinitperiod}}%
+      }
+      \name{author}{1}{}{%
+        {{hash=34d0b1d2d06352d60e8370defd148715}{Im}{I\bibinitperiod}{et\bibnamedelima al.}{e\bibinitperiod\bibinitdelim a\bibinitperiod}{}{}{Daniel\bibnamedelima Jiwoong}{D\bibinitperiod\bibinitdelim J\bibinitperiod}}%
+      }
+      \strng{namehash}{34d0b1d2d06352d60e8370defd148715}
+      \strng{fullhash}{34d0b1d2d06352d60e8370defd148715}
+      \field{sortinit}{I}
+      \field{labeltitle}{Denoising Criterion for Variational Auto-Encoding Framework}
+      \field{journaltitle}{arXiv preprint arXiv:1511.06406}
+      \field{title}{Denoising Criterion for Variational Auto-Encoding Framework}
+      \field{year}{2015}
+    \endentry
+    \entry{maclaurinautograd}{article}{}
+      \name{labelname}{3}{}{%
+        {{hash=07e607fb522f06610feb023ecfa712e2}{Maclaurin}{M\bibinitperiod}{Dougal}{D\bibinitperiod}{}{}{}{}}%
+        {{hash=834f50f5d5a332c21effd10f07daf79e}{Duvenaud}{D\bibinitperiod}{David}{D\bibinitperiod}{}{}{}{}}%
+        {{hash=0d7f3607c0972d955d28f65d08139baa}{Adams}{A\bibinitperiod}{Ryan\bibnamedelima P}{R\bibinitperiod\bibinitdelim P\bibinitperiod}{}{}{}{}}%
+      }
+      \name{author}{3}{}{%
+        {{hash=07e607fb522f06610feb023ecfa712e2}{Maclaurin}{M\bibinitperiod}{Dougal}{D\bibinitperiod}{}{}{}{}}%
+        {{hash=834f50f5d5a332c21effd10f07daf79e}{Duvenaud}{D\bibinitperiod}{David}{D\bibinitperiod}{}{}{}{}}%
+        {{hash=0d7f3607c0972d955d28f65d08139baa}{Adams}{A\bibinitperiod}{Ryan\bibnamedelima P}{R\bibinitperiod\bibinitdelim P\bibinitperiod}{}{}{}{}}%
+      }
+      \strng{namehash}{eb28c1b89816be12ea4304066ad98c3e}
+      \strng{fullhash}{eb28c1b89816be12ea4304066ad98c3e}
+      \field{sortinit}{M}
+      \field{labeltitle}{Autograd: Effortless Gradients in Numpy}
+      \field{title}{Autograd: Effortless Gradients in Numpy}
+    \endentry
+    \entry{titsias2009variational}{inproceedings}{}
+      \name{labelname}{1}{}{%
+        {{hash=6a5df0f6aef2cd529cdd786ac214d3c0}{Titsias}{T\bibinitperiod}{Michalis\bibnamedelima K}{M\bibinitperiod\bibinitdelim K\bibinitperiod}{}{}{}{}}%
+      }
+      \name{author}{1}{}{%
+        {{hash=6a5df0f6aef2cd529cdd786ac214d3c0}{Titsias}{T\bibinitperiod}{Michalis\bibnamedelima K}{M\bibinitperiod\bibinitdelim K\bibinitperiod}{}{}{}{}}%
+      }
+      \strng{namehash}{6a5df0f6aef2cd529cdd786ac214d3c0}
+      \strng{fullhash}{6a5df0f6aef2cd529cdd786ac214d3c0}
+      \field{sortinit}{T}
+      \field{labeltitle}{Variational learning of inducing variables in sparse Gaussian processes}
+      \field{booktitle}{International Conference on Artificial Intelligence and Statistics}
+      \field{title}{Variational learning of inducing variables in sparse Gaussian processes}
+      \field{year}{2009}
+      \field{pages}{567\bibrangedash 574}
+    \endentry
+    \entry{tran2015variational}{article}{}
+      \name{labelname}{3}{}{%
+        {{hash=831126fd259babc16b5bd86bbc5f0098}{Tran}{T\bibinitperiod}{Dustin}{D\bibinitperiod}{}{}{}{}}%
+        {{hash=bb5c273638bcd68f168fefeca29f69c1}{Ranganath}{R\bibinitperiod}{Rajesh}{R\bibinitperiod}{}{}{}{}}%
+        {{hash=0acd0349006f4ee348ffe16e1fe1fe21}{Blei}{B\bibinitperiod}{David\bibnamedelima M}{D\bibinitperiod\bibinitdelim M\bibinitperiod}{}{}{}{}}%
+      }
+      \name{author}{3}{}{%
+        {{hash=831126fd259babc16b5bd86bbc5f0098}{Tran}{T\bibinitperiod}{Dustin}{D\bibinitperiod}{}{}{}{}}%
+        {{hash=bb5c273638bcd68f168fefeca29f69c1}{Ranganath}{R\bibinitperiod}{Rajesh}{R\bibinitperiod}{}{}{}{}}%
+        {{hash=0acd0349006f4ee348ffe16e1fe1fe21}{Blei}{B\bibinitperiod}{David\bibnamedelima M}{D\bibinitperiod\bibinitdelim M\bibinitperiod}{}{}{}{}}%
+      }
+      \strng{namehash}{fc491ae1ff54e6ff71bcec6bede0d077}
+      \strng{fullhash}{fc491ae1ff54e6ff71bcec6bede0d077}
+      \field{sortinit}{T}
+      \field{labeltitle}{Variational Gaussian Process}
+      \field{journaltitle}{arXiv preprint arXiv:1511.06499}
+      \field{title}{Variational Gaussian Process}
+      \field{year}{2015}
+    \endentry
+    \entry{vincentDAE}{article}{}
+      \name{labelname}{1}{}{%
+        {{hash=5bd66bf63d8732bd111a18d7434edbcf}{Vincent}{V\bibinitperiod}{et\bibnamedelima al.}{e\bibinitperiod\bibinitdelim a\bibinitperiod}{}{}{Pascal}{P\bibinitperiod}}%
+      }
+      \name{author}{1}{}{%
+        {{hash=5bd66bf63d8732bd111a18d7434edbcf}{Vincent}{V\bibinitperiod}{et\bibnamedelima al.}{e\bibinitperiod\bibinitdelim a\bibinitperiod}{}{}{Pascal}{P\bibinitperiod}}%
+      }
+      \strng{namehash}{5bd66bf63d8732bd111a18d7434edbcf}
+      \strng{fullhash}{5bd66bf63d8732bd111a18d7434edbcf}
+      \field{sortinit}{V}
+      \field{labeltitle}{Extracting and composing robust features with denoising autoencoders}
+      \field{journaltitle}{Proceedings of the 25th international conference on Machine learning. ACM}
+      \field{title}{Extracting and composing robust features with denoising autoencoders}
+      \field{year}{2008}
+    \endentry
+  \endsortlist
+\endrefsection
+\endinput
+
