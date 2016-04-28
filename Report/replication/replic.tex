@@ -57,7 +57,7 @@ Until now we were assuming that the $KL$-divergence term $D_{KL} (q_{\phi}(\math
 
 $$ \widetilde{\mathcal{L}}^{A}(\boldsymbol{\theta}, \boldsymbol{\phi}; \mathbf{x}_{i}) = \frac{1}{L} \sum_{l=1}^L \left( \log p_{\boldsymbol{\theta}}(\mathbf{x}_{i}, \mathbf{z}_{i,l}) - \log q_{\phi}(\mathbf{z}_{i,l} | \mathbf{x}_i) \right).$$
 
-Naturally, this form in general will have greater variance than the previous estimator. We decided that it will be informative to compare the performance of both estimators using only one sample i.e. $L=1$ -- this will allow us to observe how much more robust is the first estimator. Figure \ref{fig:mnist_LAvsLB} shows the results for the MNIST data set where lower bound for $\widetilde{\mathcal{L}}^{B}$ was taken from the section \ref{sec:svi}.
+Naturally, this form in general will have greater variance than the previous estimator. We decided that it will be informative to compare the performance of both estimators using only one sample i.e. $L=1$ -- this will allow us to observe how much more robust is the first estimator. Figure \ref{fig:mnist_LAvsLB} shows the results for the MNIST data set.
 
 \begin{figure}[!htb]
 \centering
