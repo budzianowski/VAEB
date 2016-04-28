@@ -1,6 +1,6 @@
 \documentclass[../report.tex]{subfiles}
 \begin{document}
-The aim of Variational Inference is to provide a deterministic approximation to an intractable posterior distribution by finding parameters $\phi$ such that $\DivKL{\Func{q_\phi}{\mathbf{\theta}}}{\Cond{\mathbf{\theta}}{D}}$ is minimised. This is achieved by noting that
+The aim of variational inference is to provide a deterministic approximation to an intractable posterior distribution by finding parameters $\phi$ such that $\DivKL{\Func{q_\phi}{\mathbf{\theta}}}{\Cond{\mathbf{\theta}}{D}}$ is minimised. This is achieved by noting that
 \begin{align}
   \DivKL{\Func{q_\phi}{\mathbf{\theta}}}{\Cond{\mathbf{\theta}}{D}} =& \log \Prob{D} + \Expect{\Func{q_\phi}{\mathbf{\theta}}}{\log \Func{q_\phi}{\mathbf{\theta}}  - \log \Prob{\mathbf{\theta} ,D}} \nonumber \\
   =:& \log \Prob{X} - \Func{\mathcal{L}}{\phi; D}.

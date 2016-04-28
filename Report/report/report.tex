@@ -13,15 +13,18 @@
 \usepackage{cleveref}
 \usepackage{mathtools}
 \usepackage[backend=biber]{biblatex}
+\usepackage{cleveref}
+\usepackage{float}
+\usepackage{multirow}
+
+\newcounter{defcounter}
+\setcounter{defcounter}{0}
+
 \usetikzlibrary{shapes.geometric,arrows,chains,matrix,positioning,scopes,calc}
 \tikzstyle{mybox} = [draw=white, rectangle]
 \definecolor{darkblue}{rgb}{0,0.08,0.45}
 \definecolor{blue}{rgb}{0,0,1}
 \usetikzlibrary{fit,positioning}
-\usepackage{cleveref}
-
-\newcounter{defcounter}
-\setcounter{defcounter}{0}
 
 % Basic function commands.
 \newcommand{\Func}[2]{#1 \left( #2\right)}
@@ -87,6 +90,7 @@
 \geometry{a4paper} % or letterpaper (US) or a5paper or....
 \geometry{margin=2cm} % for example, change the margins to 2 inches all round
 
+% paragraph line 
 \usepackage[parfill]{parskip} % Activate to begin paragraphs with an empty line rather than an indenet
 \usepackage{graphicx}
 
@@ -108,22 +112,13 @@
 \makeatletter
 \renewcommand{\@seccntformat}[1]{\csname the#1\endcsname.\quad}
 \makeatother
-
 \renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
 
-%%%Definitions
-\newcommand{\bet}{\boldsymbol{\beta}}
-\newcommand{\xx}{\widetilde{\boldsymbol{x}}^{(n)}}
 
-\usepackage{float}
-\usepackage{multirow}
 
 % no linebreaks after subsection!
 \usepackage{titlesec}
-%\titleformat{\subsection}[runin]{\normalfont\large\bfseries}{\thesubsection}{1em}{}
 
-\usepackage{float}
-\usepackage{multirow}
 
 \bibliography{bio}
 \begin{document}
@@ -131,7 +126,7 @@
 \Large{\textsc{
 University of Cambridge}}\\
 \vspace{.5cm}
-\large\textbf{MLSALT 4}\\
+\large\textbf{MLSALT 4: Auto-Encoding Variational Bayes}\\
 \vspace{.5cm}
 \large{Tom}\\
 \large{Will Tebbutt, wct23, Darwin College}\\
