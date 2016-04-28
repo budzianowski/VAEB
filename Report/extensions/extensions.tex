@@ -1,8 +1,13 @@
 \documentclass[../report.tex]{subfiles}
 \begin{document}
-
-An obvious extension to the paper to investigate is to simply change the form of the prior and the variational approximation in an attempt to induce a particular form of latent space. For example a particularly interesting set up would be to define a sparsity inducing prior that encourages each dimension of the latent space to be approximately valued on $\{0, 1\}$. An obvious choice would be a set of sparse Beta distributions (ie. ones in which the shape parameters $\alpha, \beta < 1$), but one could also use pairs of univariate Gaussians with means $0$ and $1$ and small variances.
+\subsection{Latent space priors}
+An obvious extension to the paper to investigate is to simply change the form of the prior and the variational approximation in an attempt to induce a particular form of latent space. For example a particularly interesting set up would be to define a sparsity inducing prior that encourages each dimension of the latent space to be approximately valued on $\{0, 1\}$. An obvious choice would be a set of sparse Beta distributions (ie. ones in which the shape parameters $\alpha, \beta < 1$), but one could also use pairs of univariate Gaussians with means $0$ and $1$ and small variances.\\
 
 Such a prior would be useful for two reasons - firstly it would allow one to provide a binary encoding for a data set by truncating the posterior approximation for any particular observation to be exactly vector binary valued allowing for a large amount of lossy compression. The posterior distribution over the parameters $\theta$ and latent values $\mathbf{z}_i$ also contains rotational symmetry which may affect the quality of the approximate inference if it attempts to place posterior mass over the entirety of this. Were a prior such as the one proposed used, this rotational symmetry would be destroyed and replaced with a ``permutation symmetry'', similar to that found in a finite mixture model.
+
+\\
+\subsection{Non-parametric posterior approximation}
+We currently assume a parametric form of posterior $q_\phi(\mathbf{z}|\mathbf{x})$ that allows the use of the reparameterization trick. Although this yields a robust training regime, it limits the expressibility of model to a subset of potential distributions. If instead we directly use the $g_\phi(\mathbf{x}, \epsilon)$ we can induce an arbitrarily complex posterior that would allow us to approximate any true posterior.\\
+This idea has been recently realised using Gaussian process by \cite{tran2015variational} who draw random latent input samples, push them through a non-linear mapping and then draw posterior samples. If we instead were to use a MLP to model $g_\phi(\mathbf{x}, \epsilon)$ we can, theoretically, model arbitrary posteriors. The problem now is the ability to yield a differentiable distribution over latent space which can potentially be sampling multiple $g_\phi(\mathbf{x}, \epsilon_i)$ to approximate a distribution, and batching gradients over all samples. This is akin to a Monte Carlo estimate of the variational posterior.
 
 \end{document}
