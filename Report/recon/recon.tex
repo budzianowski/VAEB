@@ -1,4 +1,4 @@
-\documentclass[../report.tex]{subfiles}
+\documentclass[../report/report.tex]{subfiles}
 \begin{document}
 The VAE provides a probabilistic approach to modeling the data as a distribution around some underlying manifold. This allows us to define a posterior distribution over the latent space, and a distribution over input space which can be used to score inputs, while being able to measure uncertainty over both estimates. Aside from these traditional advantages to a Bayesian approach are we afforded over traditional approaches, do we also gain in modeling capability?\\
 The AE also takes an input vector and maps it to some latent space, however only providing a point estimate on some lower dimensional manifold. AEs are trained by minimizing the reconstruction error of training examples usually measured by mean squared error (MSE), and a weight regularizer:

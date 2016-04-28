@@ -1,4 +1,4 @@
-\documentclass[../report.tex]{subfiles}
+\documentclass[../report/report.tex]{subfiles}
 \begin{document}
 \subsection{Visualisation of learned manifolds}
 It is possible to observe what the encoder learnt during training if we choose a low-dimensional latent space e.g. $2D$. Following the authors, we mapped the linearly spaced grid of coordinates over the unit square through the inverse CDF of the Gaussian (our prior for the latent space is Gaussian) to obtain the value of $\mathbf{z}$. Then, we plotted the output of our decoder $p_{\mathbf{\theta}} (\mathbf{x}| \mathbf{z})$ with the estimated parameters $\mathbf{\theta}$. Figure \ref{fig:FREY} shows the results for two learned manifolds.
@@ -6,12 +6,12 @@ It is possible to observe what the encoder learnt during training if we choose a
 \begin{figure}[!htb]
 \minipage{0.5\linewidth}%
 \begin{center}
-%\includegraphics[width=0.6\linewidth]{../../freyFaces/MNIST.jpg}
+\includegraphics[width=0.6\linewidth]{../../freyFaces/MNIST.jpg}
 \end{center}
 \endminipage 
 \minipage{0.5\linewidth}  
 \begin{center}
-%\includegraphics[width=0.5\linewidth]{../freyFaces/FREY.jpg}
+\includegraphics[width=0.5\linewidth]{../../freyFaces/FREY.jpg}
 \end{center}
 \endminipage\hfill
 
@@ -23,12 +23,17 @@ In the case of the MNIST dataset, similarly to the results in the paper the cent
 
 \subsection{Number of samples and a batch size}
 The authors found out that the number of samples $L$ per data point can be set to $1$ as long as the mini-batch size $M$ was large enough, e.g. $M = 100$. However, they didn't provide any empirical results and we decided to run the comparison between the number of samples and a batch size in terms of optimizing the lower bound. Due to the computational requirements ($32$ models needed for evaluation), the experiment was run only with Frey Face dataset with $2000$ epochs of training. Figure \ref{fig:heatmaps} presents the results for sample size ranging from $1$ to $8$ and batches of size $20$, $60$, $100$ and $140$.
+
 \begin{figure}[!htb]
 \minipage{0.5\linewidth}%
-%\includegraphics[width=0.7\linewidth]{../res/heatMapTraining}
+\begin{center}
+\includegraphics[width=0.7\linewidth]{../../res/heatMapTraining}
+\end{center}
 \endminipage 
 \minipage{0.5\linewidth}  
-%\includegraphics[width=0.7\linewidth]{../res/heatMapValid}
+\begin{center}
+\includegraphics[width=0.7\linewidth]{../../res/heatMapValid}
+\end{center}
 \endminipage\hfill
   \caption[1]{Heatmaps of lower bound for Frey Face data set.}
   \label{fig:heatmaps}
@@ -41,9 +46,7 @@ Extending the depth of the neural networks proved to be a very helpful method in
 
 \begin{figure}[!htb]
 \centering
-%\includegraphics[width=0.8\linewidth]{../../res/mnist_depth}
-%\includegraphics[width=0.8\linewidth]{../res/frey_LAvsLB}
-
+\includegraphics[width=0.8\linewidth]{../../res/mnist_depth}
   \caption[1]{Comparison of performance between different encoders architectures in terms of optimizing the lower bound with dimensionality of latent a space set to $10$. }
 \end{figure}
 
@@ -58,8 +61,7 @@ Naturally, this form in general will have greater variance than the previous est
 
 \begin{figure}[!htb]
 \centering
-%\includegraphics[width=0.8\linewidth]{../../res/mnist_LAvsLB}
-%\includegraphics[width=0.8\linewidth]{../res/frey_LAvsLB}
+\includegraphics[width=0.8\linewidth]{../../res/mnist_LAvsLB}
 
   \caption[1]{Comparison of two SGVB estimators in terms of optimizing the lower bound for different dimensionality of latent space ($N_z$). }
   \label{fig:mnist_LAvsLB}
@@ -72,8 +74,7 @@ The paper considered only $\text{tanh}$ as an activation function in the case of
 
 \begin{figure}[!htb]
 \centering
-%\includegraphics[width=0.8\linewidth]{../../res/mnist_activations}
-%\includegraphics[width=0.8\linewidth]{../res/frey_LAvsLB}
+\includegraphics[width=0.8\linewidth]{../../res/mnist_activations}
   \caption[1]{Comparison of different activation functions in terms of optimizing the lower bound. }
 \label{fig:mnist_activation}
 \end{figure}
