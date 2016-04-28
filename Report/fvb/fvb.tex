@@ -1,15 +1,44 @@
 \documentclass[../report.tex]{subfiles}
 \begin{document}
-As well as providing a method of variational inference over the parameters of latent space Kingma and Welling also detail a method of performing full variational Bayesian inference over the parameters.
+As well as providing a method of variational inference over the parameters of latent space Kingma and Welling also detail a method of performing full variational Bayesian inference over the parameters. In this scheme we place a hyperprior over the parameters of the model $p_\alpha(\mathbf{\theta})$. The variational of the lower bound of the marginal likelihood can then be written:
+\begin{equation}
+\Func{\mathcal{L}}{\mathbf{\phi}; \mathbf{X}}=\Expect{\Func{q_\phi}{\theta}}{\log p_\mathbf{\theta}(\mathbf{X})} - \DivKL{q_\phi(\mathbf{\theta})}{\Func{p_\mathbf{\alpha}}{\mathbf{\theta}}}
+\label{eq:full_vb_ml}
+\end{equation}
+By maximizing this we are encouraging the model to reconstruct the data accurately, while constraining the form that the distribution of parameters can take.\\
+For a particular point we have a variational lower bound on the marginal likelihood:
+\begin{equation}
+\Func{\mathcal{L}}{\mathbf{\theta}, \mathbf{\phi}; \mathbf{x^{(i)}}} =\Expect{\Func{q_\phi}{\mathbf{z} | \mathbf{x^{(i)}}}}{\log p_\mathbf{\theta}(\mathbf{z} | \mathbf{x^{(i)}})} - \DivKL{q_\phi(\mathbf{z} | \mathbf{x^{(i)}})}{\Func{p_\mathbf{\theta}}{\mathbf{z}}}
+\label{eq:full_vb__dp_ml}
+\end{equation}
+Combing \cref{eq:full_vb_ml} and \cref{eq:full_vb__dp_ml}, using the same reparameterization trick as $\tilde{z}=g_{\phi}(\mathbf{\epsilon})$ with $\epsilon \sim p(\epsilon)$ and using the same trick for the variational approximation to the posterior over parameters: $\tilde{\mathbf{\theta}} = h_\phi(\zeta)$ with $\zeta = p(\zeta)$ we arrive at the differentiable Monte Carlo estimate for the variational lower bound of the marginal likelihood:
+\begin{equation}
+\mathcal{L}(\phi; \mathbf{X}) \approx \frac{1}{L}\sum_{l=1}^{L} N\cdot(\log p_{\tilde{\theta}}(\mathbf{x} | \mathbf{\tilde{z}})
+ + \log p_{\tilde{\theta}}(\tilde{\mathbf{z}}) - 
+ \log q_\phi(\mathbf{\tilde{z}} | x)) + \log p_\alpha(\mathbf{\tilde{\theta}}) - \log q_\phi(\mathbf{\tilde{\theta}})
+ \label{eq:fvb_mc_approx}
+\end{equation}
+which can be maximized by performing SGVB as before by differentiating with respect to $\mathbf{\phi}$.\\
+The paper gives a concrete example of a realization of the above model in which we assume standard normal distributions for the priors over the variables and latent space, and have variational approximations to the posteriors of:
+\begin{equation}
+\begin{split}
+q_\phi(\mathbf{\theta}) & = \mathcal{N}(\mathbf{\theta}; \mathbf{\mu}_\mathbf{\theta}, \mathbf{\sigma^2_\theta}\mathbf{I})\\
+q_\phi(\mathbf{z|x}) & = \mathcal{N}(\mathbf{z}; \mathbf{\mu}_\mathbf{z}, \mathbf{\sigma^2_z}\mathbf{I})
+\end{split}
+\end{equation}
+With many of the terms being Gaussians many of the terms in \cref{eq:fvb_mc_approx} can be solved analytically.\\
+The above was implemented and tried on the MNIST and FreyFace data sets. Although the lower bound was increased, progress was extremely slow, the training lower bound increased much faster than the validation set, and evaluation of the reconstruction ability of the resulting models showed that no learning had taken place.\\
+The very slow progress to an eventual poor model resembled the effects of starting in a poor region of neural network parameter space where gradients tend to be very flat, and so the initial values of $\mu_\sigma$ were seeded with the MAP solutions from a regular VAE trained to convergence and the $\sigma_\theta^2$ were all set to be $10^-3$, thereby hopefully encouraging the model to learn a distribution around a known good configuration of parameters. This yielded identically poor results.\\
+The purpose of performing inference over the parameters is to reduce overfitting and promote generalization. However in the scheme proposed it appears that the model underfits to the extent that it simply does not learn. There are a number of possible explanations for this.\\
+One problem that was faced in the implementation was negative values of variances. This was worked around by using a standard deviation which is then squared to yield a positive variance. In their recent paper on variational inference over MLP parameters \cite{blundell2015weight} work around this by parameterizing $\sigma$ as $\sigma = \log(1 + exp(\rho))$\\
+Despite yielding a closed form solution, a standard normal prior over weights is perhaps too wide for MLP weight parameters, which typically have very low variance about zero. In their recent paper on variational inference over MLP parameters \cite{blundell2015weight} found that despite not yielding a closed form solution a complicated spike-and-slab-like prior performed best, \\
 
 
-Tried FVB on random initialisation, however performed really badly:
-continuous:
-Lower bound: -53582.4758831, time: 0.483903589
-Lower bound on validation set: -245029.915134
-discrete:
-Lower bound: -57463.0461588, time: 4.11004209518
-Lower bound on validation set: -5434312.97123
+PAPER:
+Trains an ensemble of networks so that networks are robust to parameter pertubations.
+
+Talk about whether the assumptions are good or not?
+
 
 
 \end{document}
