@@ -11,6 +11,7 @@
 \usepackage{algorithm}
 \usepackage{tikz}
 \usepackage{cleveref}
+\usepackage{mathtools}
 \usetikzlibrary{shapes.geometric,arrows,chains,matrix,positioning,scopes,calc}
 \tikzstyle{mybox} = [draw=white, rectangle]
 \definecolor{darkblue}{rgb}{0,0.08,0.45}
@@ -74,6 +75,7 @@
 \newcommand{\xbar}{\overline{\mathbf{x}}}
 \newcommand{\xbarl}{\overline{x}}
 \newcommand{\Simp}[1]{\mathcal{S}^{#1}}
+\newcommand\myeq{\stackrel{\mathclap{\normalfont\mbox{def}}}{=}}
 
 % Independence symbol.
 \newcommand\indep{\protect\mathpalette{\protect\independenT}{\perp}}
@@ -143,13 +145,16 @@ University of Cambridge}}\\
 \section{The Variational Autoencoder}
 \subfile{vae/vae.tex}
 
+\section{Replications and Extensions}
+\subfile{replication/replic.tex}
+
 \section{Reconstruction}
 \subfile{recon/recon.tex}
 
-\section{Full variantional bayes}
+\section{Full Variational Bayes}
 \subfile{fvb/fvb.tex}
 
-\section{Extensions}
+\section{Future Works}
 \subfile{extensions/extensions.tex}
 
 \section{Conclusion}
