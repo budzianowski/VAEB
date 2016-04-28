@@ -34,8 +34,7 @@ The authors found out that the number of samples $L$ per data point can be set t
   \label{fig:heatmaps}
 \end{figure}
 
-The results are somewhat inconclusive and don't confirm the authors' findings. In the case of the test data, the highest score was obtained with $L=2$ and $M=100$ and the score was invariant to the sample size only with the batch size larger than $20$. In the case of training set the sample size and
-However, it is possible that the models trained with a larger batch size might need more time to converge and and further investigation is needed here.
+The results are somewhat inconclusive and don't confirm the authors' findings. In the case of the test data, the highest score was obtained with $L=2$ and $M=100$ and the score was invariant to the sample size only with the batch size larger than $20$. In the case of training set, the highest score for lower bound was obtained with the batch of size $20$ where the sample size $L$ makes a big influence. For larger sizes of batch sample size becomes invariant in terms of the score for the lower bound. However, it is possible that the models trained with a larger batch size might need more time to converge and and further investigation is needed here.
 
 \subsection{Increasing the depth of the encoder}
 Extending the depth of the neural networks proved to be a very helpful method in increasing the power of neural architectures. The authors considered the encoder with only one hidden layer and we decided to add additional hidden layers to test how much gains can be obtained in terms of optimizing the lower bound and at the same time still obtaining robust results. The experiment was run with MNIST data set having $500$ hidden units with the size of the latent space $N_z$ set to $10$ which seems to be optimal value. 
