@@ -9,7 +9,7 @@ Noting that $\log \Prob{D}$ is constant w.r.t. $\phi$, we can now minimise the K
 \begin{equation}
   \Func{\mathcal{L}}{\phi; D} \approx \frac{1}{L} \sum_{l=1}^{L} \log \Prob{\mathbf{\theta}_l ,D} - \log \Func{q_\phi}{\mathbf{\theta}_l}, \quad \mathbf{\theta}_l \sim \Func{q_\phi}{\mathbf{\theta}}
 \end{equation}
-This stochastic approximation to the ELBO is not differentiable w.r.t. $\phi$ as the distribution from which each $\mathbf{\theta}_l$ is sampled itself depends upon $\phi$, meaning that the gradient of the log likelihood cannot be exploited to perform inference. One of the primary contributions of the paper being reviewed is to provide a differentiable estimator for $\mathcal{L}$ that allows gradient information to be exploited. In particular it notes that if there exists a tractable reparameterisation of the random variable $\tilde{\mathbf{\theta}} \sim \Func{q_\phi}{\mathbf{\theta}}$ such that
+This stochastic approximation to the ELBO is not differentiable w.r.t. $\phi$ as the distribution from which each $\mathbf{\theta}_l$ is sampled itself depends upon $\phi$, meaning that the gradient of the log likelihood cannot be exploited to perform inference. One of the primary contributions of the paper being reviewed is to provide a differentiable estimator for $\mathcal{L}$ that allows gradient information in the log likelihood $\CondFunc{p_\theta}{\mathbf{x}_i}{\mathbf{z}_i}$ to be exploited, resulting in an estimator with lower variance. In particular it notes that if there exists a tractable reparameterisation of the random variable $\tilde{\mathbf{\theta}} \sim \Func{q_\phi}{\mathbf{\theta}}$ such that
 \begin{equation}
   \tilde{\mathbf{\theta}} = \Func{g_\phi}{\epsilon}, \quad \epsilon \sim \Prob{\epsilon},
 \end{equation}
