@@ -159,35 +159,33 @@ Perform approximate inference in model with local latent variables $z_i$ whilst 
 
 \begin{center}
 \begin{tikzpicture}
-\tikzstyle{main}=[circle, minimum size = 30mm, thick, draw =black!80, node distance = 48mm]
+\tikzstyle{main}=[circle, minimum size = 10mm, thick, draw =black!80, node distance = 16mm]
 \tikzstyle{connect}=[-latex, thick]
 \tikzstyle{box}=[rectangle, draw=black!100]
   \node[main, fill = white!100] (theta) {$\theta$};
-  \node[main, fill = white!100, right=of theta] (C1) {$\mathbf{z}_i$};
+  \node[main, fill = white!100, below=of theta] (C1) {$\mathbf{z}_i$};
   \node[main, fill = black!10, right=of C1] (X1) {$\mathbf{x}_i$};
   \path (theta) edge [connect] (C1)
-        (C1) edge [connect] (X1);
-  \node[rectangle, inner sep=0mm, fit= (C1) (X1),label=below right:$N$, yshift=0mm, xshift=32mm] {};
-  \node[rectangle, inner sep=10mm,draw=black!100, fit= (C1) (X1), yshift=-5mm] {};
+        (C1) edge [connect] (X1)
+        (theta) edge [connect] (X1);
+  \node[rectangle, inner sep=0mm, fit= (C1) (X1),label=below right:$N$, yshift=0mm, xshift=12mm] {};
+  \node[rectangle, inner sep=11mm,draw=black!100, fit= (C1) (X1), yshift=0mm] {};
   \path
-    ([shift={(50\pgflinewidth,-50\pgflinewidth)}]current bounding box.south west)
+    ([shift={(50\pgflinewidth,-100\pgflinewidth)}]current bounding box.south west)
     ([shift={( 50\pgflinewidth, -150\pgflinewidth)}]current bounding box.north east);
 \end{tikzpicture}
 \end{center}
-
-%\vspace{-0.5in}
-
-\vspace{0.5in}
+\vspace{-0.2in}
 
 \mysection{SGVB}
 
 Stochastic Gradient Variational Bayes provides a method to find a deterministic approximation to an intractable posterior distribution by finding parameters $\phi$ such that $\DivKL{\CondFunc{q_\phi}{\mathbf{z}_i}{\mathbf{x}_i}}{\CondFunc{p_\theta}{\mathbf{z}_i}{\mathbf{x}_i}}$ is minimised for all $i$. This is achieved by, for each observation, maximising a lower bound
 \begin{equation}
-  \Func{\mathcal{L}}{\phi; \mathbf{x}_i} = \Expect{\CondFunc{q_\phi}{\mathbf{z}_i}{\mathbf{x}_i}}{\log \CondFunc{p_\theta}{\mathbf{z}_i}{\mathbf{x}_i}} - \DivKL{\CondFunc{q_\phi}{\mathbf{z}_i}{\mathbf{x}_i}}{\pProb{\mathbf{z}_i}}. \nonumber 
+  \Func{\mathcal{L}}{\phi; \mathbf{x}_i} = \Expect{\CondFunc{q_\phi}{\mathbf{z}_i}{\mathbf{x}_i}}{\log \CondFunc{p_\theta}{\mathbf{x}_i}{\mathbf{z}_i}} - \DivKL{\CondFunc{q_\phi}{\mathbf{z}_i}{\mathbf{x}_i}}{\pProb{\mathbf{z}_i}}. \nonumber 
 \end{equation}
 The expectation term in this lower bound cannot typically be computed exactly.
 \begin{align}
-  \Func{\tilde{\mathcal{L}}^B}{\theta, \phi; \mathbf{x}_i} = \frac{1}{L} \sum_{l=1}^{L} \log \CondFunc{p_\theta}{\mathbf{x}_i}{\mathbf{z}_{i,l}} - \DivKL{\CondFunc{q_{\phi}}{\mathbf{z}_i}{\mathbf{x}_i}}{\Func{p_\theta}{\mathbf{z}_i}}, \nonumber 
+  \Func{\tilde{\mathcal{L}}^B}{\theta, \phi; \mathbf{x}_i} = \frac{1}{L} \sum_{l=1}^{L} \left( \log \CondFunc{p_\theta}{\mathbf{x}_i}{\mathbf{z}_{i,l}} - \DivKL{\CondFunc{q_{\phi}}{\mathbf{z}_i}{\mathbf{x}_i}}{\Func{p_\theta}{\mathbf{z}_i}} \right), \nonumber 
 \end{align}
 where reparameterising $\mathbf{\mathbf{z}}$ = $g_\phi(\mathbf{x}, \mathbf{\epsilon})$ with  $\mathbf{\epsilon} \sim p(\mathbf{\epsilon})$ yields a differentiable Monte Carlo approximation.
 
@@ -207,7 +205,7 @@ The MLPs used in the recognition model $q_\phi$ and conditional distribution $\C
 
 \mysection{Noisy KL-divergence estimate}
 In the case of the non-Gaussian distributions, it is often impossible to obtain closed-form expression for the KL-divergence term which also requires estimation by sampling. This yields more generic estimator of the form:
-$$ \widetilde{\mathcal{L}}^{A}(\theta, \boldsymbol{\phi}; \mathbf{x}^{(i)}) = \frac{1}{L} \sum_{l=1}^L \left( \log p_{\theta}(\mathbf{x}^{(i)}, \mathbf{z}^{(i,l)}) - \log q_{\phi}(\mathbf{z}^{(i,l)} | \mathbf{x}^{(i)} \right).$$
+$$ \widetilde{\mathcal{L}}^{A}(\theta, \boldsymbol{\phi}; \mathbf{x}^{(i)}) = \frac{1}{L} \sum_{l=1}^L \left( \log p_{\theta}(\mathbf{x}^{(i)}, \mathbf{z}^{(i,l)}) - \log q_{\phi}(\mathbf{z}^{(i,l)} | \mathbf{x}^{(i)}) \right).$$
 
 \vspace{0.5em}
 
