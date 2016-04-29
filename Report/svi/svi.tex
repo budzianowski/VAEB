@@ -17,7 +17,7 @@ then we can approximate the gradient of the ELBO as
 \begin{equation}
   \Func{\mathcal{L}}{\phi; D} = \Expect{\Prob{\epsilon}}{\log \Prob{\mathbf{\theta} ,X} - \Func{q_\phi}{\mathbf{\theta}}} \approx \frac{1}{L} \sum_{l=1}^{L} \log \Prob{\mathbf{\theta}_l ,X} - \log \Func{q_\phi}{\mathbf{\theta}_l} =: \Func{\tilde{\mathcal{L}}^1}{\phi; X},
 \end{equation}
-%where $\mathbf{\theta}_l = \Func{g_\phi}{\epsilon_l}$ and $\epsilon_l \sim \Prob{\epsilon}$. Thus the dependence of the sampled parameters $\mathbf{\theta}$ on $\phi$ has been removed, yielding a differentiable estimator provided that both $q_\phi$ and $\log \Prob{\mathbf{\theta} ,D}$ are themselves differentiable. Approximate inference can now be performed by computing the gradient of $\tilde{\mathcal{L}}^1$ w.r.t. $\phi$ either by hand or using one's favourite reverse-mode automatic differentiation package (eg. Autograd \cite{maclaurinautograd}) and performing gradient-based stochastic optimisation to maximise the elbo using, for example, AdaGrad \cite{duchi2011adaptive}.
+where $\mathbf{\theta}_l = \Func{g_\phi}{\epsilon_l}$ and $\epsilon_l \sim \Prob{\epsilon}$. Thus the dependence of the sampled parameters $\mathbf{\theta}$ on $\phi$ has been removed, yielding a differentiable estimator provided that both $q_\phi$ and $\log \Prob{\mathbf{\theta} ,D}$ are themselves differentiable. Approximate inference can now be performed by computing the gradient of $\tilde{\mathcal{L}}^1$ w.r.t. $\phi$ either by hand or using one's favourite reverse-mode automatic differentiation package (eg. Autograd \cite{maclaurinautograd}) and performing gradient-based stochastic optimisation to maximise the elbo using, for example, AdaGrad \cite{duchi2011adaptive}.
 
 The authors also point out that one can re-express the elbo in the following manner
 \begin{equation}
@@ -41,7 +41,7 @@ For this ELBO we can derive a similar result to $\tilde{\mathcal{L}}^1$, where w
 \begin{equation}
   \Func{\tilde{\mathcal{L}}^A}{\mathbf{\theta}, \phi; D} \approx \frac{N}{LM} \sum_{i=1}^{M} \sum_{l=1}^{L} \log \Func{p_\mathbf{\theta}}{\mathbf{x}_i, \mathbf{z}_{i,l}} - \log \Func{q_\phi}{\mathbf{z}_{i,l}}, \quad \mathbf{z}_{i,l} = \Func{g_\phi}{\mathbf{x}_i, \mathbf{\epsilon}_{i,l}},\,\, \mathbf{\epsilon}_{i,l} \sim \Func{p}{\mathbf{\epsilon}}
 \end{equation}
-where the $M$ observations in the mini-batch are drawn uniformly from the data set comprised of $N$ obnservations and for each observation we draw $L$ samples from the approximate posterior $\CondFunc{q_\phi}{\mathbf{z}_i}{\mathbf{x}_i}$.
+where the $M$ observations in the mini-batch are drawn uniformly from the data set comprised of $N$ observations and for each observation we draw $L$ samples from the approximate posterior $\CondFunc{q_\phi}{\mathbf{z}_i}{\mathbf{x}_i}$.
 Similarly, if $\CondFunc{q_\phi}{\mathbf{z}}{\mathbf{x}}$ and $\Func{p_\mathbf{\theta}}{\mathbf{z}}$ are such that the KL-divergence between them has a tractable closed-form solution then we can use an approximate bound which we could reasonably expect to have a lower variance:
 \begin{align}
   \Func{\mathcal{L}}{\mathbf{\theta}, \phi; D} =& \,\,\Expect{\Func{q_\phi}{\mathbf{z}_1},...,\Func{q_\phi}{\mathbf{z}_N}}{\log \prod_{i=1}^{N} \CondFunc{p_\mathbf{\theta}}{\mathbf{x}_i}{\mathbf{z}_i}} - \DivKL{\prod_{i=1}^{N} \CondFunc{q_\phi}{\mathbf{z}_i}{\mathbf{x}_i}}{\prod_{i=1}^{N} \Func{p_\mathbf{\theta}}{\mathbf{z}_i}} \nonumber \\
